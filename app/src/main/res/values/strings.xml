@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GoFoodPandaan</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Add</string>
+    <string name="title_notifications">Notif</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="api_key">AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE</string>
+</resources>
