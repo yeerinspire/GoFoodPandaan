@@ -6,6 +6,7 @@ import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +23,7 @@ import com.example.gofoodpandaan.Network.RoutesItem
 import com.example.gofoodpandaan.R
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -35,7 +37,11 @@ import java.util.*
 class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
     lateinit var sessionManager: SessionManager
     lateinit var refinfo: DatabaseReference
+    lateinit var auth: FirebaseAuth
+    var userID : String? = null
     var penjual: String? = null
+    var namacostumer: String? = null
+    var fotocostumer: String? = null
     var alamat: String? = null
     var id: String? = null
     var gambar: String? = null
@@ -54,18 +60,21 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
         showPermission()
         sessionManager = SessionManager(this)
         val bundle: Bundle? = intent.extras
-        id = bundle!!.getString("firebase_id")
-        gambar = bundle.getString("Firebase_Image")
-        tulisan = bundle.getString("Firebase_title")
-        harga = bundle.getString("firebase_harga")
+        id = bundle!!.getString("firebase_idMakanan")
+        gambar = bundle.getString("Firebase_gambarMakanan")
+        tulisan = bundle.getString("Firebase_Makanan")
+        harga = bundle.getString("firebase_hargaMakanan")
         penjual = bundle.getString("firebase_penjual")
+        namacostumer = bundle.getString("firebase_namaCostumer")
         foodpopular()
         minuman()
         ambildata()
         Picasso.get().load(gambar).into(foto)
         txt_namatoko.text = penjual
+        auth = FirebaseAuth.getInstance()
+        userID = auth.currentUser!!.uid
 
-
+        carticon(userID.toString())
 
         fab.setOnClickListener {
             var latitude : String
@@ -75,9 +84,34 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
             startActivity<CartActivity>(
                 "Firebase_latakhir" to latitude,
                 "Firebase_lonakhir" to longitude,
-                "firebase_penjual" to penjual
+                "firebase_penjual" to penjual,
+                "firebase_id" to id,
+                "firebase_namaCostumer" to namacostumer,
+                "Firebase_gambarMakanan" to gambar
             )
         }
+    }
+
+    private fun carticon(userid : String) {
+        val reference : DatabaseReference = FirebaseDatabase.getInstance().getReference("Pandaan").child("keranjang").child(userid)
+        reference.addValueEventListener(object : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists())
+                {
+                    fab.visibility = View.VISIBLE
+                    faboff.visibility = View.INVISIBLE
+                }
+                else{
+                    fab.visibility = View.INVISIBLE
+                    faboff.visibility = View.VISIBLE
+
+                }
+            }
+
+        })
     }
 
     private fun foodpopular() {
@@ -131,6 +165,8 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
                                     "Firebase_title" to model.nama,
                                     "firebase_id" to model.id,
                                     "firebase_harga" to model.harga,
+                                    "Firebase_latakhir" to latAkhir.toString(),
+                                    "Firebase_lonakhir" to lonAkhir.toString(),
                                     "firebase_kode" to model.kode
                                 )
 

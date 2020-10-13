@@ -15,6 +15,10 @@ class ModelOrder {
     var status : Int? = null
     var tanggal : String? = null
     var uid : String? = null
+    var calender : String? = null
+    var namatoko : String? = null
+    var gambar : String? = null
+    var idtoko : String? = null
 
 
     constructor(){
@@ -31,7 +35,10 @@ class ModelOrder {
         lokasiTujuan: String?,
         status: Int?,
         tanggal: String?,
-        uid: String?
+        uid: String?,
+        calender: String?,
+        namatoko: String?,
+        gambar: String?
     ) {
         this.driver = driver
         this.harga = harga
@@ -43,6 +50,9 @@ class ModelOrder {
         this.status = status
         this.tanggal = tanggal
         this.uid = uid
+        this.calender = calender
+        this.namatoko = namatoko
+        this.gambar = gambar
     }
 
 

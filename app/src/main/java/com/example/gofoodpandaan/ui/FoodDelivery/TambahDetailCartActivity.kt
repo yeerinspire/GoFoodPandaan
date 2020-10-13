@@ -23,10 +23,11 @@ class TambahDetailCartActivity : AppCompatActivity() {
     var lattoko: String? = null
     var lontoko: String? = null
     var namapenjual: String? = null
-
+    var counter = 0
     lateinit var userid: String
     lateinit var auth : FirebaseAuth
     lateinit var refinfo: DatabaseReference
+    lateinit var reference: DatabaseReference
     lateinit var progressDialog: ProgressDialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,11 +49,12 @@ class TambahDetailCartActivity : AppCompatActivity() {
         refinfo = FirebaseDatabase.getInstance().reference.child("Pandaan").child("keranjang").child(userid)
         cart()
         img_cart.setOnClickListener {
-            startActivity<CartActivity>(  "Firebase_latakhir" to lattoko,
+            startActivity<CartActivity>(
+                "Firebase_latakhir" to lattoko,
                 "Firebase_lonakhir" to lontoko,
                 "firebase_penjual" to namapenjual)
         }
-        var counter = 0
+
         btn_down.setOnClickListener {
             if (counter <= 0) {
                 counter == 0
@@ -79,14 +81,21 @@ class TambahDetailCartActivity : AppCompatActivity() {
             usermap["nama"] = nama
             usermap["harga"] = nilai.toString()
             usermap["jumlah"] = counter.toString()
-            refinfo.child(nama.toString()).setValue(usermap).addOnCompleteListener {
-                if (it.isComplete){
-                    toast("berhasil")
-                }
-                else{
-                    toast("Pastikan koneksi anda stabil")
+            if (counter ==0){
+                val ref = FirebaseDatabase.getInstance().reference.child("Pandaan").child("keranjang").child(userid).child(nama.toString())
+                ref.removeValue()
+            }
+            else{
+                refinfo.child(nama.toString()).setValue(usermap).addOnCompleteListener {
+                    if (it.isComplete){
+                        toast("berhasil")
+                    }
+                    else{
+                        toast("Pastikan koneksi anda stabil")
+                    }
                 }
             }
+
 
             progressDialog.dismiss()
 

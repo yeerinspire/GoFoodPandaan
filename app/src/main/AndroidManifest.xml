@@ -6,9 +6,17 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the "MyLocation" functionality.
     -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +25,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.FoodDelivery.TrackingOrderActivity"></activity>
+        <activity android:name=".TrackingOrderOjekActivity"></activity>
+        <activity android:name=".PilihMapsTujuanActivity" />
+        <activity android:name=".PilihMapsActivity" />
+        <activity android:name=".IkiOjekActivity" />
+        <activity android:name=".ui.FoodDelivery.chatActivity" />
+        <activity android:name=".Auth.OTPActivity" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".ui.FoodDelivery.TrackingOrderActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -36,9 +51,9 @@
         <activity android:name=".ui.FoodDelivery.CartActivity" />
         <activity android:name=".ui.FoodDelivery.TambahDetailCartActivity" />
         <activity android:name=".ui.FoodDelivery.DetailFoodActivity" />
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoginActivity">
+        <activity android:name=".IkiFoodActivity" />
+        <activity android:name=".Auth.RegisterActivity" />
+        <activity android:name=".Auth.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,42 +1,79 @@
 {
   "project_info": {
-    "project_number": "911024095162",
-    "firebase_url": "https://gofoodpandaan-421ef.firebaseio.com",
-    "project_id": "gofoodpandaan-421ef",
-    "storage_bucket": "gofoodpandaan-421ef.appspot.com"
+    "project_number": "110009922026",
+    "firebase_url": "https://ikijekpandaan-3bb02.firebaseio.com",
+    "project_id": "ikijekpandaan-3bb02",
+    "storage_bucket": "ikijekpandaan-3bb02.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:911024095162:android:99b0181f141e2dad072783",
+        "mobilesdk_app_id": "1:110009922026:android:0333d18e3ba0c8460e4293",
         "android_client_info": {
-          "package_name": "com.example.gofoodpandaan"
+          "package_name": "com.alfanshter.gofoodresto"
         }
       },
       "oauth_client": [
         {
-          "client_id": "911024095162-2spohfgvh3s4bonha942k28b7m23jme7.apps.googleusercontent.com",
+          "client_id": "110009922026-5st2kcp77rt5jgqdk7eq8137ccck76q4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.gofoodpandaan",
-            "certificate_hash": "3283600518348eff77d8b90bf75d34c914a069da"
+            "package_name": "com.alfanshter.gofoodresto",
+            "certificate_hash": "7dc8b1766b7cec7ee2d7b7147c5885732fedff42"
           }
         },
         {
-          "client_id": "911024095162-f2prbgamfo46pbs4kem29jfc19fb3rem.apps.googleusercontent.com",
+          "client_id": "110009922026-cjsmidp5j1br60lug2a0vgsk620crpr1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD0sQ35dB__X0-7FhJOO43bgixcECiJQgM"
+          "current_key": "AIzaSyCchCKE6GVqzM2GISup9vppbK_-7LQBrQ0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "911024095162-f2prbgamfo46pbs4kem29jfc19fb3rem.apps.googleusercontent.com",
+              "client_id": "110009922026-cjsmidp5j1br60lug2a0vgsk620crpr1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110009922026:android:42f62bb907df6bf50e4293",
+        "android_client_info": {
+          "package_name": "com.example.gofoodpandaan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110009922026-5kdv4nt3k9rbg9iof8heahopbm62d4i7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.gofoodpandaan",
+            "certificate_hash": "7dc8b1766b7cec7ee2d7b7147c5885732fedff42"
+          }
+        },
+        {
+          "client_id": "110009922026-cjsmidp5j1br60lug2a0vgsk620crpr1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCchCKE6GVqzM2GISup9vppbK_-7LQBrQ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110009922026-cjsmidp5j1br60lug2a0vgsk620crpr1.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

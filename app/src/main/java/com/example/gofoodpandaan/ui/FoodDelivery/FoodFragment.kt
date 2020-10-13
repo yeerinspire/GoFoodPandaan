@@ -17,16 +17,25 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.glide.slider.library.SliderLayout
 import com.glide.slider.library.animations.DescriptionAnimation
 import com.glide.slider.library.slidertypes.TextSliderView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
+import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
+import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.startActivity
+import org.jetbrains.anko.support.v4.toast
 
 
-class FoodFragment : Fragment() {
+class FoodFragment : Fragment(),AnkoLogger {
     lateinit var mSlider: SliderLayout
     lateinit var root: View
     lateinit var refinfo: DatabaseReference
+    var nama:String? = null
+    var foto:String? = null
+    var email:String? = null
+    lateinit var auth: FirebaseAuth
+    var userID: String? = null
     var image_list: HashMap<String, String>? = null
     lateinit var reference: DatabaseReference
     private lateinit var recyclerView: RecyclerView
@@ -42,11 +51,30 @@ class FoodFragment : Fragment() {
     ): View? {
         root = inflater.inflate(R.layout.fragment_food, container, false)
         textSliderView = TextSliderView(context!!.applicationContext)
-
-
+        auth = FirebaseAuth.getInstance()
+        userID = auth.currentUser!!.uid
+        ambildata()
         setupslider()
         foodpopular()
         return root
+    }
+
+
+    private fun ambildata() {
+        var ref: DatabaseReference = FirebaseDatabase.getInstance().getReference("Pandaan")
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val ambildata = p0.child("Costumers").child(userID.toString()).getValue(ModelUsers::class.java)
+                nama = ambildata!!.name.toString()
+                foto = ambildata.foto.toString()
+            }
+
+        })
+
     }
 
     private fun foodpopular() {
@@ -86,11 +114,12 @@ class FoodFragment : Fragment() {
                             holder.mharga.setText(model.harga)
                             holder.itemView.setOnClickListener {
                                 startActivity<DetailFoodActivity>(
-                                    "Firebase_Image" to model.gambar,
-                                    "Firebase_title" to model.nama,
-                                    "firebase_id" to model.id,
-                                    "firebase_harga" to model.harga,
-                                    "firebase_penjual" to model.penjual
+                                    "Firebase_gambarMakanan" to model.gambar,
+                                    "Firebase_Makanan" to model.nama,
+                                    "firebase_idMakanan" to model.id,
+                                    "firebase_hargaMakanan" to model.harga,
+                                    "firebase_penjual" to model.penjual,
+                                    "firebase_namaCostumer" to nama
                                 )
 
                             }
@@ -109,7 +138,7 @@ class FoodFragment : Fragment() {
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var mtitle: TextView = itemView.findViewById(R.id.name)
         var mimage: ImageView = itemView.findViewById(R.id.gambar_makanan)
-        var mharga : TextView = itemView.findViewById(R.id.harga)
+        var mharga: TextView = itemView.findViewById(R.id.harga)
     }
 
     private fun setupslider() {

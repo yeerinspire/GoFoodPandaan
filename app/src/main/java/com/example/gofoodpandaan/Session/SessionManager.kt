@@ -44,6 +44,17 @@ class SessionManager(private val context: Context?) {
         return Pref?.getBoolean(isloginadmin,false)
     }
 
+    private val logicmaps = "status"
+    fun setlogicmaps(check:String?)
+    {
+        editor?.putString(logicmaps,check)
+        editor?.commit()
+    }
+
+    fun getlogicmaps():String?
+    {
+        return Pref?.getString(logicmaps,"")
+    }
 
 
 

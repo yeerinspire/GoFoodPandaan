@@ -7,4 +7,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps">Map</string>
     <string name="api_key">AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE</string>
+    <string name="title_pesanan">Pesanan</string>
+    <string name="title_profil">Profil</string>
 </resources>

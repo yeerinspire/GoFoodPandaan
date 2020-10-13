@@ -1,0 +1,159 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:orientation="vertical"
+    app:behavior_peekHeight="225dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CANCEL ORDERAN"
+        android:textColor="#ffffff"
+        android:textSize="20dp"
+        android:background="#AC4040"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/img_fotodriver"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/profil" />
+
+            <TextView
+                android:id="@+id/costumer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="Nama Driver : "
+                android:textSize="17dp" />
+
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/txt_namadriver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/costumer"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="Boss Alfan Ganteng"
+                android:textSize="17dp" />
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/txt_namamotor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_namadriver"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="Yamaha Olong"
+                android:textSize="15dp" />
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/txt_noplat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_namamotor"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/open_sans_bold"
+                android:text="N 1234 AY"
+                android:textSize="15dp" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:id="@+id/rating"
+                android:text="Rating"
+                android:textStyle="bold"
+
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="30dp"
+                android:src="@drawable/star"
+                android:id="@+id/btn_chat"
+                android:layout_below="@id/rating"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_below="@+id/rating"
+                android:layout_marginRight="5dp"
+                android:id="@+id/txt_rating"
+                android:text="5.0"
+                android:textStyle="bold"
+
+                />
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:layout_centerHorizontal="true"
+                >
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/buttontelepon"
+                    />
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/buttonchat"
+                    android:id="@+id/btn_chatojek"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

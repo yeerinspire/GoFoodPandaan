@@ -1,10 +1,13 @@
-package com.example.gofoodpandaan
+package com.example.gofoodpandaan.Auth
 
 import android.app.ProgressDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import com.alfanshter.udinlelangfix.Session.SessionManager
+import com.example.gofoodpandaan.HomeActivity
+import com.example.gofoodpandaan.IkiFoodActivity
+import com.example.gofoodpandaan.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
 
         if (sessionManager.getLogin()!!){
                 startActivity<HomeActivity>()
+            finish()
         }
 
         txt_register.setOnClickListener {

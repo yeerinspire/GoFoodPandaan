@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:orientation="vertical"
+    android:layout_gravity="bottom"
+    android:id="@+id/accept_order"
+    >
+
+    <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#C4C4C4"
+        android:layout_marginBottom="10dp"
+        >
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/peda"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:id="@+id/gambarpeda"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/gambarpeda"
+            android:text="IKI - OJEK"
+            android:textSize="17dp"
+            android:fontFamily="@font/open_sans_bold"
+            android:id="@+id/ikiojek"
+            />
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/gambarpeda"
+            android:text="1 Orang"
+            android:fontFamily="@font/open_sans_bold"
+            android:layout_below="@+id/ikiojek"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="7000"
+            android:id="@+id/txt_hargaongkir"
+            android:layout_marginRight="20dp"
+            android:fontFamily="@font/open_sans_bold"
+            />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jarak : 10 KM"
+            android:layout_marginLeft="20dp"
+            android:textSize="18sp"
+            android:fontFamily="@font/open_sans_bold"
+            android:id="@+id/txt_jarakojek"
+            />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/setjemput"
+        android:layout_gravity="bottom|right"
+        android:id="@+id/btn_jemput"
+        />
+
+</LinearLayout>

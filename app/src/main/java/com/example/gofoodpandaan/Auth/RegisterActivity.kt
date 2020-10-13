@@ -1,10 +1,13 @@
-package com.example.gofoodpandaan
+package com.example.gofoodpandaan.Auth
 
 import android.app.ProgressDialog
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.alfanshter.udinlelangfix.Session.SessionManager
+import com.example.gofoodpandaan.HomeActivity
+import com.example.gofoodpandaan.IkiFoodActivity
+import com.example.gofoodpandaan.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -37,7 +40,7 @@ class RegisterActivity : AppCompatActivity() {
             daftar()
         }
     }
-
+    var notelp : String? = null
     private fun daftar() {
             val progressDialog = ProgressDialog(this)
             progressDialog.setTitle("Sedang Login .....")
@@ -46,6 +49,7 @@ class RegisterActivity : AppCompatActivity() {
             val username = edt_namalengkap.text.toString().trim()
             val password = edt_password.text.toString().trim()
             val confirmPassword = edt_confirmPasswd.text.toString().trim()
+             notelp = edt_notelp.text.toString().trim()
             if (confirmPassword.trim() != password.trim()){
                 toast("Password harus sama")
                 progressDialog.dismiss()
@@ -63,6 +67,7 @@ class RegisterActivity : AppCompatActivity() {
                                         usermap["name"] = username
                                         usermap["password"] = password
                                         usermap["foto"] = myUrl
+                                        usermap["telefon"] = notelp
                                         databaseReference =
                                             FirebaseDatabase.getInstance().getReference("Pandaan")
                                                 .child("Costumers")

@@ -70,7 +70,9 @@
         android:layout_below="@+id/rv_order1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".TrackingOrder" />
+        tools:context=".TrackingOrder"
+        android:layout_above="@+id/card"
+        />
 
     <androidx.cardview.widget.CardView
         android:layout_height="wrap_content"
@@ -78,6 +80,7 @@
         android:layout_alignParentBottom="true"
         app:cardBackgroundColor="@color/colorWhite"
         map:cardCornerRadius="10dp"
+        android:id="@+id/card"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
@@ -98,7 +101,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/display_distance"
+                android:id="@+id/txt_tokho"
                 android:text="Nama Driver"
                 android:layout_marginLeft="10dp"
                 android:textSize="20sp"
@@ -109,7 +112,7 @@
                 android:layout_marginStart="10dp" />
 
             <TextView
-                android:id="@+id/namaorder"
+                android:id="@+id/txt_harga"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
@@ -132,19 +135,11 @@
                 android:layout_toEndOf="@id/fotodriver"
                 android:text="status perjalanan driver"
                 android:textSize="20sp"
+                android:id="@+id/txt_statusperjalanan"
                 android:textStyle="bold"
                 android:textColor="@color/fbutton_color_green_sea"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="100dp"
-                android:layout_marginTop="60dp"
-                android:id="@+id/display_expected_hour"
-                android:text=""
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"/>
+
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -154,6 +149,7 @@
                 >
 
                 <ImageView
+                    android:id="@+id/telfon_ojek"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/ic_baseline_call_24"
@@ -166,6 +162,7 @@
                     android:layout_gravity="center"
                     android:background="@drawable/ic_baseline_textsms_24"
                     android:layout_centerInParent="true"
+                    android:id="@+id/btn_chat"
                     />
 
                 <ImageView
