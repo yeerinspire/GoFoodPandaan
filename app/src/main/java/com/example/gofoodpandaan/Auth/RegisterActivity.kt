@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.example.gofoodpandaan.HomeActivity
-import com.example.gofoodpandaan.IkiFoodActivity
 import com.example.gofoodpandaan.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -36,7 +35,7 @@ class RegisterActivity : AppCompatActivity() {
         progressDialog = ProgressDialog(this)
         mAuth = FirebaseAuth.getInstance()
         auth = FirebaseAuth.getInstance()
-        btn_konfirmRegis.setOnClickListener {
+        btn_lanjut.setOnClickListener {
             daftar()
         }
     }
@@ -45,10 +44,10 @@ class RegisterActivity : AppCompatActivity() {
             val progressDialog = ProgressDialog(this)
             progressDialog.setTitle("Sedang Login .....")
             progressDialog.show()
-            val email = username_input.text.toString().trim()
+            val email = edt_email.text.toString().trim()
             val username = edt_namalengkap.text.toString().trim()
             val password = edt_password.text.toString().trim()
-            val confirmPassword = edt_confirmPasswd.text.toString().trim()
+            val confirmPassword = edt_confirmpassword.text.toString().trim()
              notelp = edt_notelp.text.toString().trim()
             if (confirmPassword.trim() != password.trim()){
                 toast("Password harus sama")

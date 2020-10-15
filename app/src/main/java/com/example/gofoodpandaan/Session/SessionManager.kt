@@ -56,6 +56,18 @@ class SessionManager(private val context: Context?) {
         return Pref?.getString(logicmaps,"")
     }
 
+    private val harga = "harga"
+    fun setharga(harga:String?)
+    {
+        editor?.putString(logicmaps,harga)
+        editor?.commit()
+    }
+
+    fun getharga():String?
+    {
+        return Pref?.getString(harga,"")
+    }
+
 
 
 }

@@ -1,17 +1,19 @@
-package com.example.gofoodpandaan.ui.FoodDelivery
+package com.example.gofoodpandaan.IkiWarung.FoodDelivery
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
 import com.example.gofoodpandaan.Model.ModelUsers
 import com.example.gofoodpandaan.R
+import com.example.gofoodpandaan.Utlis.RoundedCornersTransformation
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.glide.slider.library.SliderLayout
@@ -20,11 +22,10 @@ import com.glide.slider.library.slidertypes.TextSliderView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Transformation
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
-import org.jetbrains.anko.info
 import org.jetbrains.anko.support.v4.startActivity
-import org.jetbrains.anko.support.v4.toast
 
 
 class FoodFragment : Fragment(),AnkoLogger {
@@ -80,7 +81,7 @@ class FoodFragment : Fragment(),AnkoLogger {
     private fun foodpopular() {
         recyclerView = root.find(R.id.recyclerinfo)
         val LayoutManager = LinearLayoutManager(context!!.applicationContext)
-        LayoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        LayoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = LayoutManager
         refinfo = FirebaseDatabase.getInstance().reference.child("Pandaan").child("Resto")
         val option =
@@ -103,6 +104,9 @@ class FoodFragment : Fragment(),AnkoLogger {
                     model: ModelUsers
                 ) {
                     val refid = getRef(position).key.toString()
+                    val radius = 20
+                    val margin = 5
+                    val transformation: Transformation = RoundedCornersTransformation(radius, margin)
                     refinfo.child(refid).addValueEventListener(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
 
@@ -110,8 +114,7 @@ class FoodFragment : Fragment(),AnkoLogger {
 
                         override fun onDataChange(p0: DataSnapshot) {
                             holder.mtitle.setText(model.nama)
-                            Picasso.get().load(model.gambar).fit().centerCrop().into(holder.mimage)
-                            holder.mharga.setText(model.harga)
+                            Picasso.get().load(model.gambar).transform(transformation).fit().into(holder.mimage)
                             holder.itemView.setOnClickListener {
                                 startActivity<DetailFoodActivity>(
                                     "Firebase_gambarMakanan" to model.gambar,
@@ -138,7 +141,6 @@ class FoodFragment : Fragment(),AnkoLogger {
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var mtitle: TextView = itemView.findViewById(R.id.name)
         var mimage: ImageView = itemView.findViewById(R.id.gambar_makanan)
-        var mharga: TextView = itemView.findViewById(R.id.harga)
     }
 
     private fun setupslider() {
@@ -150,6 +152,7 @@ class FoodFragment : Fragment(),AnkoLogger {
 
             }
 
+            @SuppressLint("CheckResult")
             override fun onDataChange(p0: DataSnapshot) {
                 for (data in p0.children) {
                     var banner = data.getValue(ModelUsers::class.java)

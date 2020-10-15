@@ -1,14 +1,10 @@
-package com.example.gofoodpandaan.ui.FoodDelivery
+package com.example.gofoodpandaan.IkiWarung.FoodDelivery
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.RequestOptions
 import com.example.gofoodpandaan.Model.ChatMessage
-import com.example.gofoodpandaan.Model.User
 import com.example.gofoodpandaan.R
 import com.example.gofoodpandaan.Utlis.DateUtils.getFormattedTimeChatLog
 import com.google.firebase.auth.FirebaseAuth
@@ -19,14 +15,18 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.chat_from_row.view.*
 import kotlinx.android.synthetic.main.chat_to_row.view.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 
-class chatActivity : AppCompatActivity() {
+class chatActivity : AppCompatActivity(),AnkoLogger {
     companion object {
         val TAG = chatActivity::class.java.simpleName
     }
 
     val adapter = GroupAdapter<ViewHolder>()
     var uiddriver : String? = null
+    var namadriver : String? = null
+    var platdriver : String? = null
     lateinit var auth: FirebaseAuth
     var userID : String? = null
     // Bundle Data
@@ -35,13 +35,18 @@ class chatActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
         val bundle: Bundle? = intent.extras
-        uiddriver = bundle!!.getString("uid_driver")
+        namadriver = bundle!!.getString("nama_driver")
+        uiddriver = bundle.getString("uid_driver")
+        platdriver = bundle.getString("platdriver")
         auth = FirebaseAuth.getInstance()
         userID = auth.currentUser!!.uid
+        info { "yeri $namadriver $uiddriver" }
 
         swiperefresh.setColorSchemeColors(ContextCompat.getColor(this,R.color.colorAccent))
         recyclerview_chat_log.adapter = adapter
 
+        txt_uidlawan.text = namadriver.toString()
+        txt_platnomor.text = platdriver.toString()
 
         ambildata()
 
@@ -138,10 +143,10 @@ class ChatFromItem(val text: String, val timestamp: Long) : Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
 
-        viewHolder.itemView.textview_from_row.text = text
-        viewHolder.itemView.from_msg_time.text = getFormattedTimeChatLog(timestamp)
 
-        val targetImageView = viewHolder.itemView.imageview_chat_from_row
+        viewHolder.itemView.txt_chatdriver.text = text
+        viewHolder.itemView.txt_timedriver.text = getFormattedTimeChatLog(timestamp)
+
 
         /*   if (!user.profileImageUrl!!.isEmpty()) {
 
@@ -167,10 +172,9 @@ class ChatFromItem(val text: String, val timestamp: Long) : Item<ViewHolder>() {
 class ChatToItem(val text: String, val timestamp: Long) : Item<ViewHolder>() {
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
-        viewHolder.itemView.textview_to_row.text = text
-        viewHolder.itemView.to_msg_time.text = getFormattedTimeChatLog(timestamp)
+        viewHolder.itemView.txt_chatuser.text = text
+        viewHolder.itemView.txt_timeuser.text = getFormattedTimeChatLog(timestamp)
 
-        val targetImageView = viewHolder.itemView.imageview_chat_to_row
 
 
     }

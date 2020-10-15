@@ -18,7 +18,7 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/peda"
+            android:src="@drawable/mobil"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/gambarpeda"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/gambarpeda"
-            android:text="IKI - OJEK"
+            android:text="IKI - TAKSI"
             android:textSize="17dp"
             android:fontFamily="@font/open_sans_bold"
             android:id="@+id/ikiojek"

@@ -1,8 +1,9 @@
-package com.example.gofoodpandaan.ui.FoodDelivery
+package com.example.gofoodpandaan.IkiWarung.FoodDelivery
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
-import android.app.ProgressDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -12,18 +13,18 @@ import android.location.Location
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -31,7 +32,6 @@ import com.android.volley.toolbox.Volley
 import com.example.gofoodpandaan.*
 import com.example.gofoodpandaan.Model.ModelOrder
 import com.example.gofoodpandaan.Model.ModelUsers
-import com.example.gofoodpandaan.Model.RequestNotification
 import com.example.gofoodpandaan.Network.NetworkModule
 import com.example.gofoodpandaan.Network.ResultRoute
 import com.example.gofoodpandaan.Network.RoutesItem
@@ -58,15 +58,13 @@ import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_cart.*
-import okhttp3.ResponseBody
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.json.JSONException
 import org.json.JSONObject
-import java.sql.DriverManager.getDriver
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -87,6 +85,8 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
     var lattoko: String? = null
     var lontoko: String? = null
     var uang: Int? = null
+    var counter = 0
+    var nilai: Int? = null
     var keyy: String? = null
     var gambar: String? = null
     var namapenjual: String? = null
@@ -104,7 +104,7 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
     var namalokasi: String? = null
     var hargaongkir = 0
     var id: String? = null
-
+    lateinit var sessionManager: SessionManager
     companion object {
         private val MAPVIEW_BUNDLE_KEY = "MapViewBundleKey"
         private val markerIconSize = 90
@@ -125,11 +125,11 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
         setContentView(R.layout.activity_cart)
         maps.onCreate(savedInstanceState)
         maps.getMapAsync(this)
+        sessionManager = SessionManager(this)
         showPermission()
-        if (sum!=null){
+        if (sum != null) {
             rv_2.visibility = View.INVISIBLE
-        }
-        else{
+        } else {
             rv_2.visibility = View.VISIBLE
 
         }
@@ -183,7 +183,7 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
             if (namalokasi != null && namalokasi != null) {
                 rv1.visibility = View.VISIBLE
                 rv_2.visibility = View.INVISIBLE
-                alamat.text = namalokasi
+                homeAwal.text = namalokasi
             } else {
                 toast("masukkan maps")
             }
@@ -229,15 +229,62 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
 
     }
 
+    fun showhapus(nama : String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Apakah anda ingin menghapus food ini ? ")
+        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    var database =
+                        FirebaseDatabase.getInstance().getReference("Pandaan").child("User_Resto").child(userID.toString())
+                            .child(nama).removeValue().addOnCompleteListener {
+
+                                if (it.isSuccessful) {
+                                    toast("berhasil terhapus")
+                                    finish()
+                                    startActivity(intent)
+
+                                } else {
+                                    toast("coba ulangi lagi")
+                                    finish()
+                                    startActivity(intent)
+
+                                }
+
+                            }
+
+                }
+                DialogInterface.BUTTON_NEGATIVE -> {
+                }
+                DialogInterface.BUTTON_NEUTRAL -> {
+                }
+            }
+        }
+
+
+        // Set the alert dialog positive/yes button
+        builder.setPositiveButton("YES", dialogClickListener)
+
+        // Set the alert dialog negative/no button
+        builder.setNegativeButton("NO", dialogClickListener)
+
+        // Set the alert dialog neutral/cancel button
+        builder.setNeutralButton("CANCEL", dialogClickListener)
+
+
+        // Initialize the AlertDialog using builder object
+        dialog = builder.create()
+
+        // Finally, display the alert dialog
+        dialog!!.show()
+
+    }
     private fun showDialog(status: Boolean) {
         dialog = Dialog(this)
         dialog?.setContentView(R.layout.tunggudriver)
 
         if (status) {
-
-
             dialog?.show()
-
         } else dialog?.dismiss()
 
 
@@ -288,31 +335,32 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
     }
 */
 
-    private fun drivercancel(userid : String){
-        val ref : DatabaseReference = FirebaseDatabase.getInstance().getReference("Booking")
-        ref.addValueEventListener(object  : ValueEventListener{
+    private fun drivercancel(userid: String) {
+        val ref: DatabaseReference = FirebaseDatabase.getInstance().getReference("Booking")
+        ref.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }
 
             override fun onDataChange(p0: DataSnapshot) {
                 val status = p0.child(userid).child("status")
-                if (status.equals("cancel")){
+                if (status.equals("cancel")) {
                     insertServer()
                 }
-                  }
+            }
 
         })
 
     }
-    var sum : Int? = 0
+
+    var sum = 0
     var alfan = 0
     private fun foodpopular() {
         val LayoutManager = LinearLayoutManager(this)
         LayoutManager.orientation = LinearLayoutManager.VERTICAL
         rv_cart.layoutManager = LayoutManager
         refinfo = FirebaseDatabase.getInstance().reference.child("Pandaan").child("keranjang")
-            .child(userID.toString())
+            .child(userID.toString()).child(id.toString())
         val option =
             FirebaseRecyclerOptions.Builder<ModelUsers>().setQuery(refinfo, ModelUsers::class.java)
                 .build()
@@ -332,9 +380,6 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
                     position: Int,
                     model: ModelUsers
                 ) {
-                    alfan = ((Integer.valueOf(model.harga))) * ((Integer.valueOf(model.jumlah)))
-                    sum = sum!! + alfan
-                    hargamakanan.text = sum.toString()
                     val refid = getRef(position).key.toString()
                     refinfo.child(refid).addValueEventListener(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
@@ -342,14 +387,49 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
                         }
 
                         override fun onDataChange(p0: DataSnapshot) {
+                            alfan = ((Integer.valueOf(model.harga))) * ((Integer.valueOf(model.jumlah)))
+                            sum = sum + alfan
+                            hargamakanan.text = sum.toString()
+
                             var tipeproduk =
                                 model.harga.toString().toInt() * model.jumlah.toString().toInt()
 //                            hargatotal += tipeproduk + uang!!
                             holder.mtitle.setText(model.nama)
-                            holder.mprice.setText(model.harga)
-                            holder.mOwner.setText(model.jumlah)
+                            holder.counter.setText(model.jumlah)
+                            Picasso.get().load(model.foto).fit().into(holder.fotomakanan)
+                            counter = model.jumlah.toString().toInt()
+                            holder.buttonmin.setOnClickListener {
+                                finish()
+                                startActivity(intent)
+                                if (model.jumlah.toString().toInt() >0){
+                                   counter = model.jumlah.toString().toInt() - 1
+                                   var harga = model.harga.toString().toInt()
+                                   var data = harga * model.jumlah.toString().toInt()
+                                   holder.mprice.text = harga.toString()
+                                }
+                                else if (counter<1){
+                                   counter = 0
+                               }
+                                var ref = FirebaseDatabase.getInstance().getReference("Pandaan")
+                                    .child("keranjang").child(userID.toString())
+                                    .child(model.nama.toString()).child("jumlah")
+                                    .setValue(counter.toString())
 
-                            txt_hargatotal.text = hargatotal.toString()
+                            }
+
+                            holder.buttonplus.setOnClickListener {
+                                finish()
+                                startActivity(intent)
+                                    counter = model.jumlah.toString().toInt() + 1
+                                    var ref = FirebaseDatabase.getInstance().getReference("Pandaan")
+                                    .child("keranjang").child(userID.toString())
+                                    .child(model.nama.toString()).child("jumlah")
+                                    .setValue(counter.toString())
+
+                            }
+
+
+//                            txt_hargatotal.text = hargatotal.toString()
                             /*        holder.mprice.setText(model.harga.toString())
                                     holder.mOwner.setText(model.jumlah.toString())
                            */         holder.itemView.setOnClickListener {
@@ -422,7 +502,7 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
             val name = showName(latAwal ?: 0.0, lonAwal ?: 0.0)
             namalokasi = name
             namefix = name.toString()
-            alamat.text = namalokasi
+            homeAwal.text = namalokasi
 
         } else gps.showSettingGps()
 
@@ -531,24 +611,22 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
             val pricex = jarakValue?.toDouble()?.let { Math.round(it) }
             val price = pricex?.div(1000.0)?.times(2000.0)
             val price2 = ChangeFormat.toRupiahFormat2(price.toString())
-            if (pendekatan <= 1) {
-                harga = 2000
-                ongkir.text = "Rp. $harga"
-                estimasi.text = "Rp. $harga"
+            if (pendekatan <= 5) {
+                harga = 9000
                 hargaongkir = harga
-                var alfan = sum!! + hargaongkir
-                txt_hasil.text = alfan.toString()
-                toast(sum!!)
+                ongkirpay.text = "Rp. ${hargaongkir}  ($jarak)"
+                hargatotal = sum + hargaongkir
+                txt_hasil.text = hargatotal.toString()
+//                toast(sum!!)
 
 
-            } else if (pendekatan >= 1) {
+            }
+            if (pendekatan > 5) {
                 harga = 2000
-                ongkir.text = "Rp. ${pendekatan * harga}  ($jarak)"
-                estimasi.text = "Rp. ${pendekatan * harga}"
                 hargaongkir = pendekatan * harga
-                var alfan = sum!! + hargaongkir
-                txt_hasil.text = alfan.toString()
-                toast(sum!!)
+                ongkirpay.text = "Rp. ${hargaongkir}  ($jarak)"
+                hargatotal = sum + hargaongkir
+                txt_hasil.text = hargatotal.toString()
 
             }
 
@@ -562,9 +640,13 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
 
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var mtitle: TextView = itemView.findViewById(R.id.product_name)
-        var mprice: TextView = itemView.findViewById(R.id.product_price)
-        var mOwner: TextView = itemView.findViewById(R.id.product_owner)
+        var mtitle: TextView = itemView.findViewById(R.id.namamakanan)
+        var mprice: TextView = itemView.findViewById(R.id.txt_hargamakanan)
+        var mOwner: TextView = itemView.findViewById(R.id.txt_catatan)
+        var counter: TextView = itemView.findViewById(R.id.counter)
+        var buttonmin: ImageView = itemView.findViewById(R.id.btn_min)
+        var buttonplus: ImageView = itemView.findViewById(R.id.btn_plus)
+        var fotomakanan: ImageView = itemView.findViewById(R.id.fotomakanan)
 
     }
 
@@ -588,11 +670,11 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
                 lonAwal = place?.latLng?.longitude
                 route()
                 namalokasi = place?.address.toString()
-                alamat.text = place?.address.toString()
+                homeAwal.text = place?.address.toString()
                 namefix = place?.address.toString()
                 showMainMarker(latAwal ?: 0.0, lonAwal ?: 0.0, place?.address.toString())
-                var alfan = sum!! + hargaongkir
-//                hasil.text = alfan.toString()
+                var hargatotal = sum + hargaongkir
+                txt_hasil.text = hargatotal.toString()
 
                 Log.i("locations", "Place: " + place?.name)
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
@@ -612,13 +694,13 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
         insertRequest(
             currentTime.toString(),
             userID.toString(),
-            alamat.text.toString(),
+            homeAwal.text.toString(),
             latAwal,
             lonAwal,
-            alamat.text.toString(),
+            homeAwal.text.toString(),
             latAkhir,
             lonAkhir,
-            txt_hargatotal.text.toString(),
+            txt_hasil.text.toString(),
             jarak.toString()
         )
     }
@@ -654,7 +736,7 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
         val database = FirebaseDatabase.getInstance()
         val myRef = database.getReference(Constan.tb_Booking)
         var nilai = alfan + hargaongkir
-        var alfantotal = sum!! + hargaongkir
+        var alfantotal = sum + hargaongkir
         keyy = database.reference.push().key
         myRef.child(userID.toString()).child("latitudeToko").setValue(latAkhir.toString())
         myRef.child(userID.toString()).child("longitudeToko").setValue(lonAkhir.toString())
@@ -702,32 +784,38 @@ class CartActivity : AppCompatActivity(), AnkoLogger, OnMapReadyCallback,
                     driverFound = true
                     driverID = key!!
 
-                    val db: DatabaseReference = FirebaseDatabase.getInstance().getReference("Pandaan")
-                    db.child("Akun_Driver").child(driverID.toString()).child("status").setValue(userID)
-                    db.child("Akun_Driver").child(driverID.toString()).child("uidtoko").setValue(id.toString())
+                    val db: DatabaseReference =
+                        FirebaseDatabase.getInstance().getReference("Pandaan")
+                    db.child("Akun_Driver").child(driverID.toString()).child("status")
+                        .setValue(userID)
+                    db.child("Akun_Driver").child(driverID.toString()).child("uidtoko")
+                        .setValue(id.toString())
 
 
-                    val booking: DatabaseReference = FirebaseDatabase.getInstance().getReference("Booking")
-                    booking.addValueEventListener(object :ValueEventListener{
+                    val booking: DatabaseReference =
+                        FirebaseDatabase.getInstance().getReference("Booking")
+                    booking.addValueEventListener(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
                             TODO("Not yet implemented")
                         }
 
                         override fun onDataChange(p0: DataSnapshot) {
                             val data = p0.child(userID.toString()).child("status").value.toString()
-                            if (data.equals(driverID.toString())){
-                                var alfan = sum!! + hargaongkir
-                                    startActivity<TrackingOrderActivity>(   "kunci" to driverID,
-                                        "latitudeawal" to latAwal.toString(),
-                                        "longitudeawal" to lonAwal.toString(),
-                                        "latitudetoko" to latAkhir.toString(),
-                                        "longitudetoko" to lonAkhir.toString(),
-                                        "alamat" to namalokasi,
-                                        "namapenjual" to namapenjual,
-                                        "jarak" to jarak,
-                                        "gambar" to gambar,
-                                        "id" to id,
-                                        "harga" to alfan.toString())
+                            if (data.equals(driverID.toString())) {
+                                var alfan = sum + hargaongkir
+                                startActivity<TrackingOrderActivity>(
+                                    "kunci" to driverID,
+                                    "latitudeawal" to latAwal.toString(),
+                                    "longitudeawal" to lonAwal.toString(),
+                                    "latitudetoko" to latAkhir.toString(),
+                                    "longitudetoko" to lonAkhir.toString(),
+                                    "alamat" to namalokasi,
+                                    "namapenjual" to namapenjual,
+                                    "jarak" to jarak,
+                                    "gambar" to gambar,
+                                    "id" to id,
+                                    "harga" to alfan.toString()
+                                )
                                 finish()
                             }
                         }

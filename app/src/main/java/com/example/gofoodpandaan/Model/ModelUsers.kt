@@ -21,6 +21,9 @@ class ModelUsers {
     var longitude:String? = null
     var driver:String? = null
     var foto:String? = null
+    var keterangan:String? = null
+    var statusrating:Boolean? = null
+    var ratingdriver:String? = null
 
     constructor(){
 
@@ -45,7 +48,10 @@ class ModelUsers {
         latitude: String?,
         longitude: String?,
         driver: String?,
-        foto: String?
+        foto: String?,
+        keterangan: String?,
+        statusrating: Boolean?,
+        ratingdriver: String?
     ) {
         this.name = name
         this.email = email
@@ -66,6 +72,9 @@ class ModelUsers {
         this.longitude = longitude
         this.driver = driver
         this.foto = foto
+        this.keterangan = keterangan
+        this.statusrating = statusrating
+        this.ratingdriver = ratingdriver
     }
 
 

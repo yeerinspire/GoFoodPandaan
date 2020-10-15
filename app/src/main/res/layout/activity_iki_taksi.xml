@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".IkiTaksi.IkiTaksiActivity">
+    <com.google.android.gms.maps.MapView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="200dp"
+        android:id="@+id/mapview"
+        tools:context=".IkiTaksi.IkiTaksiActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
+    <include layout="@layout/fragment_bottom_sheet" />
+    <include layout="@layout/accept_order" />
+    <include layout="@layout/activity_pilih_maps" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

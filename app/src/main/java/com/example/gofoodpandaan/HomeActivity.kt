@@ -7,8 +7,6 @@ import com.example.gofoodpandaan.UiaplikasiIKI.HomeFragment
 import com.example.gofoodpandaan.UiaplikasiIKI.NotifikasiFragment
 import com.example.gofoodpandaan.UiaplikasiIKI.PesananFragment
 import com.example.gofoodpandaan.UiaplikasiIKI.ProfilFragment
-import com.example.gofoodpandaan.ui.FoodDelivery.FoodFragment
-import com.example.gofoodpandaan.ui.FoodDelivery.history.HistoryFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {

@@ -1,34 +1,41 @@
-package com.example.gofoodpandaan
+package com.example.gofoodpandaan.IkiTaksi
 
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.location.Geocoder
 import android.os.Bundle
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.example.gofoodpandaan.DirectionMapsV2
+import com.example.gofoodpandaan.HomeActivity
+import com.example.gofoodpandaan.Model.DataDriver
 import com.example.gofoodpandaan.Model.DriverWorking
 import com.example.gofoodpandaan.Network.NetworkModule
 import com.example.gofoodpandaan.Network.ResultRoute
 import com.example.gofoodpandaan.Network.RoutesItem
-import com.example.gofoodpandaan.ui.FoodDelivery.chatActivity
+import com.example.gofoodpandaan.R
+import com.example.gofoodpandaan.IkiWarung.FoodDelivery.chatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.squareup.picasso.Picasso
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_tracking_order_ojek.*
+import kotlinx.android.synthetic.main.activity_tracking_order_taksi.*
 import kotlinx.android.synthetic.main.sheet_orderan.*
+import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.info
 import org.jetbrains.anko.startActivity
 import java.util.*
 
-class TrackingOrderOjekActivity : AppCompatActivity() {
-     var peta: GoogleMap? = null
+class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
+    var peta: GoogleMap? = null
     private lateinit var database: DatabaseReference
 
     var latawal: String? = null
@@ -38,30 +45,48 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
     var kunci: String? = null
     var namadriver: String? = null
     var statusperjalanan: String? = null
-    var uiddriver :String? = null
+    var uiddriver: String? = null
     var driverMarker: Marker? = null
     var gambar: String? = null
+
+    var nama: String? = null
+    var foto: String? = null
+    var motor: String? = null
+    var platnomor: String? = null
+    lateinit var imageview: ImageView
+
     lateinit var progressdialog: ProgressDialog
     lateinit var auth: FirebaseAuth
-    var UserID :String? = null
+    var UserID: String? = null
 
-    private fun ambildata(){
-        val ref = FirebaseDatabase.getInstance().getReference("BookingOjek")
-        ref.addValueEventListener(object : ValueEventListener{
+
+    fun ambildatanyadriver() {
+        val ref = FirebaseDatabase.getInstance().getReference("Pandaan").child("Akun_Driver")
+        ref.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }
 
             override fun onDataChange(p0: DataSnapshot) {
-                uiddriver = p0.child(UserID.toString()).child("status").value.toString()
+                val data = p0.child(kunci.toString()).getValue(DataDriver::class.java)
+                nama = data!!.nama.toString()
+                foto = data.foto.toString()
+                motor = data.motor.toString()
+                platnomor = data.platnomor.toString()
+                txt_namadriver.text = nama.toString()
+                txt_namamotor.text = motor.toString()
+                txt_noplat.text = platnomor.toString()
+                Picasso.get().load(foto.toString()).resize(100, 100).into(imageview)
 
             }
 
         })
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tracking_order_ojek)
+        setContentView(R.layout.activity_tracking_order_taksi)
+        imageview = findViewById(R.id.img_fotodriver)
         progressdialog = ProgressDialog(this)
         val bundle: Bundle? = intent.extras
         kunci = bundle!!.getString("kunci")
@@ -80,30 +105,28 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
                 lngtujuan.toString().toDouble(),
                 "Posisi Tujuan"
             )
-            showbetweenmarker(latawal.toString().toDouble(), lngawal.toString().toDouble(),lattujuan.toString().toDouble(),lngtujuan.toString().toDouble(),"posisiku","posoi")
-            route(latawal!!,lngawal!!,lattujuan!!,lngtujuan!!)
+            showbetweenmarker(
+                latawal.toString().toDouble(),
+                lngawal.toString().toDouble(),
+                lattujuan.toString().toDouble(),
+                lngtujuan.toString().toDouble(),
+                "posisiku",
+                "posoi"
+            )
+            route(latawal!!, lngawal!!, lattujuan!!, lngtujuan!!)
+            ambildatanyadriver()
             ambildatadriver()
-
-        }
-
-        btn_chatojek.setOnClickListener {
-            progressdialog.setTitle("sedang menghubungkan")
-            progressdialog.show()
-            ambildata()
-            if (uiddriver!=null){
-                progressdialog.dismiss()
-                startActivity<chatActivity>("uid_driver" to uiddriver)
-            }
-            else{
-                ambildata()
-                if (uiddriver!=null){
+            btn_chatojek.setOnClickListener {
+                progressdialog.setTitle("sedang menghubungkan")
+                progressdialog.show()
+                if (nama != null && platnomor != null) {
+                    startActivity<chatActivity>(
+                        "nama_driver" to kunci,
+                        "uid_driver" to kunci,
+                        "platdriver" to platnomor)
                     progressdialog.dismiss()
-                    startActivity<chatActivity>("uid_driver" to uiddriver)
                 }
-
             }
-
-
         }
 
 
@@ -112,7 +135,8 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
     private fun ambildatadriver() {
         val auth = FirebaseAuth.getInstance()
         val userID = auth.currentUser!!.uid
-        val database2 = FirebaseDatabase.getInstance().getReference("BookingOjek").child(userID.toString())
+        val database2 =
+            FirebaseDatabase.getInstance().getReference("BookingOjek").child(userID.toString())
         database = FirebaseDatabase.getInstance().getReference("Driver")
         database.child("DriverSibuk").child(kunci.toString())
             .addValueEventListener(object : ValueEventListener {
@@ -123,44 +147,45 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
                 override fun onDataChange(p0: DataSnapshot) {
                     if (p0.exists()) {
                         val ambildata = p0.getValue(DriverWorking::class.java)
-                        if (ambildata!=null){
+                        if (ambildata != null) {
                             namadriver = ambildata.driver.toString()
                             statusperjalanan = ambildata.statusPerjalanan.toString()
                             var locationLat = 0.0
                             var locationLang = 0.0
                             uiddriver = ambildata.uid.toString()
-                            if (ambildata.latitudeDriver!=null){
+                            if (ambildata.latitudeDriver != null) {
                                 locationLat = ambildata.latitudeDriver.toString().toDouble()
                             }
-                            if (ambildata.longitudeDriver!=null){
+                            if (ambildata.longitudeDriver != null) {
                                 locationLang = ambildata.longitudeDriver.toString().toDouble()
                             }
 
                             val posisiDriver = LatLng(locationLat, locationLang)
                             driverMarker = if (driverMarker == null) {
                                 peta?.addMarker(
-                                    MarkerOptions().position(posisiDriver).title("lokasi Driver").icon(
-                                        bitmapDescriptorFromVector(
-                                            this@TrackingOrderOjekActivity,
-                                            R.mipmap.ic_car
+                                    MarkerOptions().position(posisiDriver).title("lokasi Driver")
+                                        .icon(
+                                            bitmapDescriptorFromVector(
+                                                this@TrackingOrderTaksiActivity,
+                                                R.mipmap.ic_car
+                                            )
                                         )
-                                    )
                                 )
                             } else {
                                 driverMarker?.remove()
                                 peta?.addMarker(
-                                    MarkerOptions().position(posisiDriver).title("lokasi Driver").icon(
-                                        bitmapDescriptorFromVector(
-                                            this@TrackingOrderOjekActivity,
-                                            R.mipmap.ic_car
+                                    MarkerOptions().position(posisiDriver).title("lokasi Driver")
+                                        .icon(
+                                            bitmapDescriptorFromVector(
+                                                this@TrackingOrderTaksiActivity,
+                                                R.mipmap.ic_car
+                                            )
                                         )
-                                    )
                                 )
                             }
 
 
-                        }
-                        else{
+                        } else {
                             ambildatadriver()
                         }
 
@@ -177,7 +202,7 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
                 var ambildata = snapshot.getValue(DriverWorking::class.java)
                 val hargatotal = ambildata?.harga.toString()
 
-                if (ambildata?.status.toString() == "selesai"){
+                if (ambildata?.status.toString() == "selesai") {
                     val ref = FirebaseDatabase.getInstance().getReference("chat")
                     ref.child("user_messages").child(UserID.toString()).removeValue()
 /*
@@ -219,6 +244,7 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
         peta!!.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         peta!!.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 15f))
     }
+
     fun showTujuanMarker(lat: Double, lon: Double, msg: String) {
 
         val res = this.resources
@@ -235,7 +261,15 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
         peta!!.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
         peta!!.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 15f))
     }
-    fun showbetweenmarker(lat : Double, lng : Double, lattujuan : Double, lngtujuan : Double, namaawal : String, namatujuan : String){
+
+    fun showbetweenmarker(
+        lat: Double,
+        lng: Double,
+        lattujuan: Double,
+        lngtujuan: Double,
+        namaawal: String,
+        namatujuan: String
+    ) {
         val marker1 =
             LatLng(java.lang.Double.valueOf(lat), java.lang.Double.valueOf(lng))
         val marker2 = LatLng(lattujuan, lngtujuan)
@@ -261,8 +295,14 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
         })
 
     }
+
     @SuppressLint("CheckResult")
-    private fun route(latitude: String, longitude:String , latitudeTujuan : String, longitudeTujuan : String) {
+    private fun route(
+        latitude: String,
+        longitude: String,
+        latitudeTujuan: String,
+        longitudeTujuan: String
+    ) {
         val origin = latitude.toString() + "," + longitude.toString()
         val dest = latitudeTujuan.toString() + "," + longitudeTujuan.toString()
         NetworkModule.getService()
@@ -285,7 +325,14 @@ class TrackingOrderOjekActivity : AppCompatActivity() {
             val waktu = routes[0]?.legs?.get(0)?.duration?.text
             val pricex = jarakValue!!.toDouble().let { Math.round(it) }
             val price = pricex.div(1000.0).times(2000.0)
-            peta?.let { point?.let { it1 -> DirectionMapsV2.gambarRoute(it, it1) } }
+            peta?.let {
+                point?.let { it1 ->
+                    DirectionMapsV2.gambarRoute(
+                        it,
+                        it1
+                    )
+                }
+            }
         }
     }
 

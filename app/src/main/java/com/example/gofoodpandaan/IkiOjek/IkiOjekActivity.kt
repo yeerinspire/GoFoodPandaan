@@ -1,29 +1,23 @@
-package com.example.gofoodpandaan
+package com.example.gofoodpandaan.IkiOjek
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
-import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -33,13 +27,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.andrefrsousa.superbottomsheet.SuperBottomSheetFragment
-import com.example.gofoodpandaan.IkiOjekActivity.Companion.namalokasi
-import com.example.gofoodpandaan.IkiOjekActivity.Companion.namalokasitujuan
-import com.example.gofoodpandaan.IkiOjekActivity.Companion.sheet
+import com.example.gofoodpandaan.*
 import com.example.gofoodpandaan.Network.NetworkModule
 import com.example.gofoodpandaan.Network.ResultRoute
 import com.example.gofoodpandaan.Network.RoutesItem
-import com.example.gofoodpandaan.ui.FoodDelivery.TrackingOrderActivity
+import com.example.gofoodpandaan.R
 import com.firebase.geofire.GeoFire
 import com.firebase.geofire.GeoLocation
 import com.firebase.geofire.GeoQuery
@@ -69,19 +61,20 @@ import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import com.mancj.materialsearchbar.MaterialSearchBar
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter
 import com.skyfishjy.library.RippleBackground
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.accept_order.*
-import kotlinx.android.synthetic.main.activity_cart.*
 import kotlinx.android.synthetic.main.activity_iki_ojek.*
 import kotlinx.android.synthetic.main.activity_pilih_maps.*
-import kotlinx.android.synthetic.main.activity_register.*
-import kotlinx.android.synthetic.main.activity_tracking_order.*
 import kotlinx.android.synthetic.main.content_map.*
 import kotlinx.android.synthetic.main.fragment_bottom_sheet.*
 import org.jetbrains.anko.*
@@ -98,10 +91,9 @@ class IkiOjekActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,AnkoL
     lateinit var materialSearchBar: MaterialSearchBar
     private var rippleBg: RippleBackground? = null
     private var mapView: View? = null
-    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     private var placesClient: PlacesClient? = null
     lateinit var predictionList : List<AutocompletePrediction>
-    private var mMap: GoogleMap? = null
+    lateinit var mMap: GoogleMap
     var keyy: String? = null
     var nama: String? = null
     var dialog: Dialog? = null
@@ -110,7 +102,7 @@ class IkiOjekActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,AnkoL
     private var driverFound = false
     var driverID: String? = null
 
-    private var locationCallback: LocationCallback? = null
+
     private var requestBol = false
 
     private var mLastKnownLocation: Location? = null
@@ -119,10 +111,16 @@ var logic = 0
     lateinit var auth: FirebaseAuth
     var userID : String? = null
 
+
+    //lokasi system
+    private lateinit var locationRequest : LocationRequest
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
+
     companion object{
 
 
-        var peta: GoogleMap? = null
+        lateinit var peta: GoogleMap
         var namalokasi: String? = null
         var namalokasitujuan : String? = null
         val sheet = DemoBottomSheetFragment()
@@ -135,11 +133,11 @@ var logic = 0
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
         var hargaongkir : Int? = null
     }
-    @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_iki_ojek)
+        init()
+
         val bundle: Bundle? = intent.extras
         nama = bundle!!.getString("namacostumer")
 
@@ -147,7 +145,6 @@ var logic = 0
         pilihmaps.visibility = View.INVISIBLE
         accept_order.visibility = View.INVISIBLE
         sessionManager = SessionManager(this)
-        showPermission()
         materialSearchBar = findViewById(R.id.searchBar)
         rippleBg = findViewById(R.id.ripple_bg)
 
@@ -282,8 +279,8 @@ var logic = 0
             val latitude = mMap!!.cameraPosition.target.latitude
             val longitude = mMap!!.cameraPosition.target.longitude
             rippleBg!!.startRippleAnimation()
-            IkiOjekActivity.latitude = latitude.toString()
-            IkiOjekActivity.longitude = longitude.toString()
+            Companion.latitude = latitude.toString()
+            Companion.longitude = longitude.toString()
 
             startActivity<IkiOjekActivity>()
             Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
@@ -328,7 +325,7 @@ var logic = 0
                     longitude = long.toString()
                     rippleBg!!.startRippleAnimation()
                     Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
-                    if (latitudetujuan!=null && longitudetujuan!=null){
+                    if (latitudetujuan !=null && longitudetujuan !=null){
                         peta!!.clear()
                         showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(),"posisiku")
                         showMainMarker(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),"posisitujuan")
@@ -375,7 +372,7 @@ var logic = 0
             }
 
             btn_jemput.setOnClickListener {
-                if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan!=null) {
+                if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan !=null) {
                     when (requestBol) {
                         false -> {
                             requestBol = true
@@ -392,7 +389,7 @@ var logic = 0
             }
 
 
-            if (latitude!=null && longitude!=null && latitudetujuan!=null && longitudetujuan!=null){
+            if (latitude !=null && longitude !=null && latitudetujuan !=null && longitudetujuan !=null){
               route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
             }
 
@@ -403,6 +400,27 @@ var logic = 0
 
     }
 
+    private fun init(){
+        locationRequest = LocationRequest()
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        locationRequest.setFastestInterval(3000)
+        locationRequest.interval = 5000
+        locationRequest.setSmallestDisplacement(10f)
+
+        locationCallback = object : LocationCallback(){
+            override fun onLocationResult(locationResult: LocationResult?) {
+                super.onLocationResult(locationResult)
+                latitude = locationResult!!.lastLocation.latitude.toString()
+                longitude = locationResult!!.lastLocation.longitude.toString()
+                val newPos = LatLng(locationResult.lastLocation.latitude,locationResult.lastLocation.longitude)
+                peta.moveCamera(CameraUpdateFactory.newLatLngZoom(newPos,18f))
+            }
+
+        }
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        mFusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback,Looper.myLooper())
+
+    }
 
 
     @SuppressLint("CheckResult")
@@ -424,7 +442,6 @@ var logic = 0
 
 
         if (routes != null) {
-             harga = 2000
 
             val point = routes.get(0)?.overviewPolyline?.points
             jarak = routes[0]?.legs?.get(0)?.distance?.text
@@ -434,14 +451,21 @@ var logic = 0
              jaraksebenarnya = jarakValue.toString().toFloat() / 1000
              pendekatan = Math.round(jaraksebenarnya)
             peta?.let {
-                point?.let { it1 -> DirectionMapsV2.gambarRoute(it, it1)                    }
+                point?.let { it1 ->
+                    DirectionMapsV2.gambarRoute(
+                        it,
+                        it1
+                    )
+                }
             }
 
-            if (pendekatan <= 1) {
+            if (pendekatan <= 5) {
                 toast("halo")
+                harga = 9000
                 txt_hargaongkir.text = "Rp. $harga"
                 txt_jarakojek.text = "Rp. $jarak"
-            } else if (pendekatan >= 1) {
+            } else if (pendekatan >5) {
+                harga = 2000
                 hargaongkir = pendekatan * harga!!
                 txt_hargaongkir.text = "Rp. ${pendekatan * harga!!}  ($jarak)"
                 txt_jarakojek.text = "Rp. ${pendekatan* harga!!}"
@@ -565,6 +589,7 @@ var logic = 0
                                     "longitudeawal" to longitude.toString(),
                                     "latitudetujuan" to latitudetujuan.toString(),
                                     "longitudetujuan" to longitudetujuan.toString())
+                                finish()
                             }
                         }
 
@@ -609,14 +634,12 @@ var logic = 0
         }
 
     }
-    @RequiresApi(Build.VERSION_CODES.M)
+
     fun showPermission() {
         showGps()
-        if (this.let {
-                ContextCompat.checkSelfPermission(
+        if (this.let { ContextCompat.checkSelfPermission(
                     it,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
-                )
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)
             } != PackageManager.PERMISSION_GRANTED) {
 
             if (this.let {
@@ -635,11 +658,8 @@ var logic = 0
                         android.Manifest.permission.ACCESS_COARSE_LOCATION
                     ), 1
                 )
-
-
             }
         }
-
     }
 
     private fun showGps() {
@@ -699,6 +719,7 @@ var logic = 0
     }
 
     override fun onDestroy() {
+        mFusedLocationProviderClient.removeLocationUpdates(locationCallback)
         mapview?.onDestroy()
         super.onDestroy()
     }
@@ -738,26 +759,26 @@ var logic = 0
     fun showMainMarker(lat: Double, lon: Double, msg: String) {
 
         val coordinate = LatLng(lat, lon)
-        peta?.addMarker(
+        peta.addMarker(
             MarkerOptions().position(coordinate).title(msg)
                 .icon(BitmapDescriptorFactory.defaultMarker())
                 .draggable(true)
         )
         val cameraPosition =
             CameraPosition.Builder().target(LatLng(lat, lon)).zoom(17f).build()
-        peta?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        peta.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
     fun showTujuanMarker(lat: Double, lon: Double, msg: String) {
 
         val coordinate = LatLng(lat, lon)
-        peta?.addMarker(
+        peta.addMarker(
             MarkerOptions().position(coordinate).title(msg)
                 .icon(BitmapDescriptorFactory.defaultMarker())
                 .draggable(true)
         )
         val cameraPosition =
             CameraPosition.Builder().target(LatLng(lat, lon)).zoom(17f).build()
-        peta?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        peta.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 
     override fun onMarkerDragEnd(p0: Marker?) {
@@ -777,26 +798,42 @@ var logic = 0
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        mMap = googleMap
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        mMap!!.isMyLocationEnabled = true
-        mMap!!.uiSettings.isMyLocationButtonEnabled = true
+        mMap = googleMap!!
+
+        Dexter.withContext(this)
+            .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            .withListener(object :PermissionListener{
+                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                    //aktifkan
+                    mMap.isMyLocationEnabled = true
+                    mMap.uiSettings.isMyLocationButtonEnabled = true
+                    mMap.setOnMyLocationClickListener {
+                        toast("button di klik")
+                        mFusedLocationProviderClient.lastLocation
+                            .addOnFailureListener { e->
+                                toast("permission ${p0!!.permissionName} + gagal ")
+                            }.addOnSuccessListener { location ->
+                                val userLatLng = LatLng(location.latitude,location.longitude)
+                                peta.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,18f))
+                            }
+                        true
+                    }
+
+                    //layout
+
+                        }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    p0: PermissionRequest?,
+                    p1: PermissionToken?
+                ) {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                    toast("Permission ${p0!!.permissionName} + gagal")
+                }
+            })
 
         if (mapView != null && mapView!!.findViewById<View?>("1".toInt()) != null) {
             val locationButton =
@@ -809,102 +846,8 @@ var logic = 0
             layoutParams.setMargins(0, 0, 40, 180)
         }
 
-        //check if gps is enabled or not and then request user to enable it
-
-        //check if gps is enabled or not and then request user to enable it
-        val locationRequest = LocationRequest.create()
-        locationRequest.interval = 10000
-        locationRequest.fastestInterval = 5000
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
-        val builder =
-            LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-
-        val settingsClient = LocationServices.getSettingsClient(this@IkiOjekActivity)
-        val task =
-            settingsClient.checkLocationSettings(builder.build())
-
-        task.addOnSuccessListener(
-            this@IkiOjekActivity,
-            OnSuccessListener<LocationSettingsResponse?> { getDeviceLocation() })
-
-        task.addOnFailureListener(this@IkiOjekActivity,
-            OnFailureListener { e ->
-                if (e is ResolvableApiException) {
-                    try {
-                        e.startResolutionForResult(this@IkiOjekActivity, 51)
-                    } catch (e1: IntentSender.SendIntentException) {
-                        e1.printStackTrace()
-                    }
-                }
-            })
-
-        mMap!!.setOnMyLocationButtonClickListener {
-            if (materialSearchBar.isSuggestionsVisible) materialSearchBar.clearSuggestions()
-            if (materialSearchBar.isSearchEnabled) materialSearchBar.disableSearch()
-            false
-        }
-        getDeviceLocation()
 
     }
-
-    @SuppressLint("MissingPermission")
-    private fun getDeviceLocation() {
-        mFusedLocationProviderClient!!.lastLocation
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    mLastKnownLocation = task.result
-                    if (mLastKnownLocation != null) {
-                        mMap!!.moveCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    mLastKnownLocation!!.getLatitude(),
-                                    mLastKnownLocation!!.getLongitude()
-                                ), DEFAULT_ZOOM.toFloat()
-                            )
-                        )
-                    } else {
-                        val locationRequest = LocationRequest.create()
-                        locationRequest.interval = 10000
-                        locationRequest.fastestInterval = 5000
-                        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                        locationCallback =
-                            object : LocationCallback() {
-                                override fun onLocationResult(locationResult: LocationResult) {
-                                    super.onLocationResult(locationResult)
-                                    if (locationResult == null) {
-                                        return
-                                    }
-                                    mLastKnownLocation = locationResult.lastLocation
-                                    mMap!!.moveCamera(
-                                        CameraUpdateFactory.newLatLngZoom(
-                                            LatLng(
-                                                mLastKnownLocation!!.getLatitude(),
-                                                mLastKnownLocation!!.getLongitude()
-                                            ), DEFAULT_ZOOM.toFloat()
-                                        )
-                                    )
-                                    mFusedLocationProviderClient!!.removeLocationUpdates(
-                                        locationCallback
-                                    )
-                                }
-                            }
-                        mFusedLocationProviderClient!!.requestLocationUpdates(
-                            locationRequest,
-                            locationCallback,
-                            null
-                        )
-                    }
-                } else {
-                    Toast.makeText(
-                        this@IkiOjekActivity,
-                        "unable to get last location",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-    }
-
 
 }
 

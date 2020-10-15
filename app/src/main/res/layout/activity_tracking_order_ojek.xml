@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TrackingOrderOjekActivity"
+    tools:context=".IkiOjek.TrackingOrderOjekActivity"
     android:background="#D5CFCF"
     >
     <com.google.android.gms.maps.MapView
@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="225dp"
-        tools:context=".TrackingOrderOjekActivity"
+        tools:context=".IkiOjek.TrackingOrderOjekActivity"
         android:layout_above="@+id/card"
         />
     <include layout="@layout/sheet_orderan" />

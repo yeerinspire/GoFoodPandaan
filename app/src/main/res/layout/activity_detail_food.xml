@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.FoodDelivery.DetailFoodActivity"
+    tools:context=".IkiWarung.FoodDelivery.DetailFoodActivity"
      >
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -65,12 +65,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Nama Toko"
+                android:text="WARUNG NIKMAT"
+                android:textSize="20dp"
+                android:fontFamily="@font/open_sans_semibold"
+                android:textColor="#204975"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/foto" />
 
             <LinearLayout
+                android:id="@+id/linearLayout5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -86,15 +90,9 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/bicycle" />
-
 
                     <com.alfanshter.jatimpark.customfont.semibold
+                        android:id="@+id/rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -102,9 +100,15 @@
                         android:gravity="center"
                         android:text="Rating"
                         android:textColor="@color/txt_color"
-                        android:textSize="12sp"
-                        android:id="@+id/rating"
-                        />
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="Memuaskan" />
 
                 </LinearLayout>
 
@@ -114,14 +118,8 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/bicycle" />
-
-
                     <com.alfanshter.jatimpark.customfont.semibold
+                        android:id="@+id/jaraktoko"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -129,9 +127,16 @@
                         android:gravity="center"
                         android:text="Jarak"
                         android:textColor="@color/txt_color"
-                        android:textSize="12sp"
-                        android:id="@+id/jaraktoko"
-                        />
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="5.3 KM" />
+
 
                 </LinearLayout>
 
@@ -141,14 +146,8 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/bicycle" />
-
-
                     <com.alfanshter.jatimpark.customfont.semibold
+                        android:id="@+id/ongkirtoko"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -156,9 +155,16 @@
                         android:gravity="center"
                         android:text="Ongkos Kirim"
                         android:textColor="@color/txt_color"
-                        android:textSize="12sp"
-                        android:id="@+id/ongkirtoko"
-                        />
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="7000" />
+
 
                 </LinearLayout>
 
@@ -172,29 +178,26 @@
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_alamat" />
-
-            <TextView
-                android:id="@+id/txt_alamat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="53dp"
-                android:layout_marginLeft="53dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="51dp"
-                android:layout_marginRight="51dp"
-                android:text="jalan pandaan kota pandaan kabupaten pasuruan"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_namatoko" />
+
+            <View
+                android:id="@+id/view5"
+                android:layout_width="0dp"
+                android:layout_height="2dp"
+                android:layout_marginTop="8dp"
+                android:background="#BABABA"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:id="@+id/constraintLayout3"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content"
             android:background="#ffffff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -206,31 +209,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
                 android:text="Makanan"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textSize="20dp"
+                android:textStyle="bold"
+            />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_makanan"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2">
+                android:layout_below="@id/textView2">
 
             </androidx.recyclerview.widget.RecyclerView>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content"
             android:background="#ffffff"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
@@ -238,23 +238,19 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="353dp"
-                android:layout_marginRight="353dp"
-                android:text="TextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="10dp"
+                android:text="Minuman"
+                android:textSize="20dp"
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_minuman"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"
-                android:id="@+id/rv_minuman"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_below="@id/textView3"
+                android:layout_marginTop="16dp" />
+        </RelativeLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

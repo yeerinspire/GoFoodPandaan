@@ -1,4 +1,4 @@
-package com.example.gofoodpandaan.ui.FoodDelivery
+package com.example.gofoodpandaan.IkiWarung.FoodDelivery
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -8,11 +8,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.example.gofoodpandaan.ChangeFormat
 import com.example.gofoodpandaan.GPSTracker
@@ -21,16 +24,19 @@ import com.example.gofoodpandaan.Network.NetworkModule
 import com.example.gofoodpandaan.Network.ResultRoute
 import com.example.gofoodpandaan.Network.RoutesItem
 import com.example.gofoodpandaan.R
+import com.example.gofoodpandaan.Utlis.RoundedCornersTransformation
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Transformation
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_detail_food.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.alert
+import org.jetbrains.anko.info
 import org.jetbrains.anko.startActivity
 import java.util.*
 
@@ -69,7 +75,7 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
         foodpopular()
         minuman()
         ambildata()
-        Picasso.get().load(gambar).into(foto)
+        Picasso.get().load(gambar).fit().into(foto)
         txt_namatoko.text = penjual
         auth = FirebaseAuth.getInstance()
         userID = auth.currentUser!!.uid
@@ -93,7 +99,7 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun carticon(userid : String) {
-        val reference : DatabaseReference = FirebaseDatabase.getInstance().getReference("Pandaan").child("keranjang").child(userid)
+        val reference : DatabaseReference = FirebaseDatabase.getInstance().getReference("Pandaan").child("keranjang").child(userid).child(id.toString())
         reference.addValueEventListener(object : ValueEventListener{
             override fun onCancelled(p0: DatabaseError) {
             }
@@ -132,23 +138,27 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
             .build()
 
         val firebaseRecyclerAdapter =
-            object : FirebaseRecyclerAdapter<ModelUsers, FoodFragment.MyViewHolder>(newOptions) {
+            object : FirebaseRecyclerAdapter<ModelUsers, MyViewHolder>(newOptions) {
                 override fun onCreateViewHolder(
                     parent: ViewGroup,
                     viewType: Int
-                ): FoodFragment.MyViewHolder {
+                ): MyViewHolder {
                     val itemView = LayoutInflater.from(this@DetailFoodActivity)
-                        .inflate(R.layout.list_item, parent, false)
-                    return FoodFragment.MyViewHolder(
+                        .inflate(R.layout.list_item_toko, parent, false)
+                    return MyViewHolder(
                         itemView
                     )
                 }
 
                 override fun onBindViewHolder(
-                    holder: FoodFragment.MyViewHolder,
+                    holder: MyViewHolder,
                     position: Int,
                     model: ModelUsers
                 ) {
+                    val radius = 30
+                    val margin = 10
+                    val transformation: Transformation = RoundedCornersTransformation(radius, margin)
+
                     val refid = getRef(position).key.toString()
                     refinfo.child(refid).addValueEventListener(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
@@ -156,14 +166,15 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
                         }
 
                         override fun onDataChange(p0: DataSnapshot) {
-                            holder.mtitle.setText(model.nama)
-                            Picasso.get().load(model.gambar).fit().centerCrop().into(holder.mimage)
-                            holder.mharga.setText(model.harga)
+                            holder.mtitle.text = model.nama
+                            holder.mharga.text = model.harga
+                            holder.mketerangan.text = model.keterangan
+                            Picasso.get().load(model.gambar).transform(transformation).fit().into(holder.mimage)
                             holder.itemView.setOnClickListener {
                                 startActivity<TambahDetailCartActivity>(
                                     "Firebase_Image" to model.gambar,
                                     "Firebase_title" to model.nama,
-                                    "firebase_id" to model.id,
+                                    "firebase_id" to id.toString(),
                                     "firebase_harga" to model.harga,
                                     "Firebase_latakhir" to latAkhir.toString(),
                                     "Firebase_lonakhir" to lonAkhir.toString(),
@@ -202,38 +213,42 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
             .build()
 
         val firebaseRecyclerAdapter =
-            object : FirebaseRecyclerAdapter<ModelUsers, FoodFragment.MyViewHolder>(newOptions) {
+            object : FirebaseRecyclerAdapter<ModelUsers, MyViewHolder>(newOptions) {
                 override fun onCreateViewHolder(
                     parent: ViewGroup,
                     viewType: Int
-                ): FoodFragment.MyViewHolder {
+                ): MyViewHolder {
                     val itemView = LayoutInflater.from(this@DetailFoodActivity)
-                        .inflate(R.layout.list_item, parent, false)
-                    return FoodFragment.MyViewHolder(
+                        .inflate(R.layout.list_item_toko, parent, false)
+                    return MyViewHolder(
                         itemView
                     )
                 }
 
                 override fun onBindViewHolder(
-                    holder: FoodFragment.MyViewHolder,
+                    holder: MyViewHolder,
                     position: Int,
                     model: ModelUsers
                 ) {
+                    val radius = 30
+                    val margin = 10
+                    val transformation: Transformation = RoundedCornersTransformation(radius, margin)
                     val refid = getRef(position).key.toString()
                     refinfo.child(refid).addValueEventListener(object : ValueEventListener {
                         override fun onCancelled(p0: DatabaseError) {
 
                         }
-
                         override fun onDataChange(p0: DataSnapshot) {
-                            holder.mtitle.setText(model.nama)
-                            Picasso.get().load(model.gambar).fit().centerCrop().into(holder.mimage)
-                            holder.mharga.setText(model.harga)
+                            holder.mtitle.text = model.nama
+                            holder.mharga.text = model.harga
+                            holder.mketerangan.text = model.keterangan
+                            Picasso.get().load(model.gambar).transform(transformation).fit().into(holder.mimage)
+
                             holder.itemView.setOnClickListener {
                                 startActivity<TambahDetailCartActivity>(
                                     "Firebase_Image" to model.gambar,
                                     "Firebase_title" to model.nama,
-                                    "firebase_id" to id,
+                                    "firebase_id" to id.toString(),
                                     "firebase_harga" to model.harga,
                                     "Firebase_latakhir" to latAkhir.toString(),
                                     "Firebase_lonakhir" to lonAkhir.toString(),
@@ -398,6 +413,14 @@ class DetailFoodActivity : AppCompatActivity(), AnkoLogger {
             showGps()
         }
     }
+
+    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var mtitle: TextView = itemView.findViewById(R.id.name)
+        var mimage: ImageView = itemView.findViewById(R.id.gambar_makanan)
+        var mharga: TextView = itemView.findViewById(R.id.hargamakanan)
+        var mketerangan: TextView = itemView.findViewById(R.id.keterangan)
+    }
+
 
 
 }

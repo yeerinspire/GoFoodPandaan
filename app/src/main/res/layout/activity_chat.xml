@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swiperefresh"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -8,25 +9,81 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white"
         tools:context=".messages.ChatLogActivity">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout3"
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_height="60dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+                <RelativeLayout
+                    android:layout_width="40dp"
+                    android:id="@+id/btn_back"
+                    android:layout_height="match_parent"
+                    >
+                    <ImageButton
+                        android:layout_width="8dp"
+                        android:layout_height="14dp"
+                        android:background="@drawable/back"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="20dp"
+                        />
+
+
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ALFAN GANTENG DEWE SAKDUNIA"
+                    android:fontFamily="@font/aleo_regular"
+                    android:textSize="14dp"
+                    android:id="@+id/txt_uidlawan"
+                    android:textColor="#204975"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/btn_back"
+                    android:layout_marginLeft="10dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="N 12345 TAK"
+                    android:fontFamily="@font/aleo_regular"
+                    android:textSize="14dp"
+                    android:layout_below="@+id/txt_uidlawan"
+                    android:id="@+id/txt_platnomor"
+                    android:textColor="#A4A4A4"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@id/btn_back"
+                    android:layout_marginLeft="20dp"
+                    />
+
+
+
+
+            </RelativeLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_chat_log"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="0dp"
             android:background="#e4e4e4"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@+id/buttons_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout3" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/buttons_container"

@@ -25,14 +25,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".TrackingOrderOjekActivity"></activity>
+        <activity android:name=".Auth.AuthActivity"></activity>
+        <activity android:name=".Auth.LoginActivity" />
+        <activity android:name=".IkiTaksi.TrackingOrderTaksiActivity" />
+        <activity android:name=".IkiTaksi.IkiTaksiActivity" />
+        <activity android:name=".IkiOjek.TrackingOrderOjekActivity" />
         <activity android:name=".PilihMapsTujuanActivity" />
         <activity android:name=".PilihMapsActivity" />
-        <activity android:name=".IkiOjekActivity" />
-        <activity android:name=".ui.FoodDelivery.chatActivity" />
+        <activity android:name=".IkiOjek.IkiOjekActivity" />
+        <activity android:name=".IkiWarung.FoodDelivery.chatActivity" />
         <activity android:name=".Auth.OTPActivity" />
         <activity android:name=".HomeActivity" />
-        <activity android:name=".ui.FoodDelivery.TrackingOrderActivity" />
+        <activity android:name=".IkiWarung.FoodDelivery.TrackingOrderActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -48,12 +52,12 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".ui.FoodDelivery.CartActivity" />
-        <activity android:name=".ui.FoodDelivery.TambahDetailCartActivity" />
-        <activity android:name=".ui.FoodDelivery.DetailFoodActivity" />
-        <activity android:name=".IkiFoodActivity" />
+        <activity android:name=".IkiWarung.FoodDelivery.CartActivity" />
+        <activity android:name=".IkiWarung.FoodDelivery.TambahDetailCartActivity" />
+        <activity android:name=".IkiWarung.FoodDelivery.DetailFoodActivity" />
+        <activity android:name=".IkiWarung.IkiFoodActivity" />
         <activity android:name=".Auth.RegisterActivity" />
-        <activity android:name=".Auth.LoginActivity">
+        <activity android:name=".Auth.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -18,6 +18,7 @@ import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.alfanshter.udinlelangfix.Session.SessionManager
+import com.example.gofoodpandaan.IkiOjek.IkiOjekActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -44,7 +45,6 @@ import com.mancj.materialsearchbar.adapter.SuggestionsAdapter
 import com.skyfishjy.library.RippleBackground
 import kotlinx.android.synthetic.main.content_map.*
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
 import java.util.*
 
 class PilihMapsTujuanActivity : AppCompatActivity(), OnMapReadyCallback {

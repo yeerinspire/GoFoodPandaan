@@ -1,6 +1,5 @@
-package com.example.gofoodpandaan.ui.FoodDelivery
+package com.example.gofoodpandaan.IkiWarung.FoodDelivery
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,7 +8,8 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.example.gofoodpandaan.IkiFoodActivity
+import com.example.gofoodpandaan.HomeActivity
+import com.example.gofoodpandaan.IkiWarung.IkiFoodActivity
 import com.example.gofoodpandaan.Model.DriverWorking
 import com.example.gofoodpandaan.R
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -17,10 +17,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_tracking_order.*
 import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import java.text.SimpleDateFormat
@@ -194,6 +192,7 @@ class TrackingOrderActivity : AppCompatActivity(), AnkoLogger {
                     usermap["calendar"] = currentDate.toString()
                     usermap["gambar"] = gambar.toString()
                     refinfo.setValue(usermap)
+                    val refhapusbooking = FirebaseDatabase.getInstance().getReference("Booking").child(userID).removeValue()
                     startActivity<IkiFoodActivity>()
                     finish()
                 }

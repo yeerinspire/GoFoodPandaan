@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.text.TextUtils
 import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.example.gofoodpandaan.HomeActivity
-import com.example.gofoodpandaan.IkiFoodActivity
 import com.example.gofoodpandaan.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*

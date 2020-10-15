@@ -29,7 +29,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/btn_ikiojek"
         app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:srcCompat="@drawable/warung" />
+        app:srcCompat="@drawable/warungbaru" />
 
     <ImageView
         android:id="@+id/imageView3"
