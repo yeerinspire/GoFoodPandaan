@@ -18,7 +18,7 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:src="@drawable/mobil"
+            android:src="@drawable/peda"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/gambarpeda"

@@ -118,7 +118,7 @@
             android:layout_marginLeft="62dp"
             android:layout_marginRight="62dp"
             android:layout_marginTop="18.7dp"
-            android:text="Login"
+            android:text="Masuk"
             android:background="@drawable/blue_fill__rounded_color"
             android:id="@+id/btn_login"
             />
@@ -126,89 +126,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10.5sp"
-            android:textColor="#1566e0"
+            android:textColor="#ffff"
             android:layout_marginTop="12dp"
             android:layout_gravity="center"
-            android:text="Register baru ?"
+            android:text="Anda Belum Mendaftar?"
             android:id="@+id/txt_register"
             />
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="10.5sp"
-            android:textColor="#1566e0"
-            android:layout_marginTop="12dp"
-            android:layout_gravity="center"
-            android:text="FORGOT PASSWORD ?"
-            />
-
 
 
     </LinearLayout>
 
-
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginBottom="13.7dp"
-            android:orientation="horizontal">
-
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13.3sp"
-                android:textColor="#aeaeae"
-                android:gravity="center_horizontal"
-                android:text="or"
-                />
-
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginBottom="35dp"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="26.7dp"
-                android:layout_height="26.7dp"
-                android:src="@drawable/fb"/>
-
-            <ImageView
-                android:layout_width="26.7dp"
-                android:layout_height="26.7dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginLeft="20dp"
-                android:src="@drawable/instagram"/>
-
-            <ImageView
-                android:layout_width="26.7dp"
-                android:layout_height="26.7dp"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/twitter"/>
-
-            <ImageView
-                android:layout_width="26.7dp"
-                android:layout_height="26.7dp"
-                android:src="@drawable/linkedin"/>
-
-        </LinearLayout>
-
-
-
-    </LinearLayout>
 
 </RelativeLayout>

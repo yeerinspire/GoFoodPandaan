@@ -20,15 +20,17 @@
             android:orientation="horizontal">
 
             <Button
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_baseline_keyboard_backspace_24" />
+                android:layout_width="8dp"
+                android:layout_height="13dp"
+                android:layout_marginTop="19dp"
+                android:layout_marginLeft="30dp"
+                android:background="@drawable/back" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="15dp"
                 android:text="Pesanan"
                 android:textSize="20dp"
                 android:textStyle="bold" />

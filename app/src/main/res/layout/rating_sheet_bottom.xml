@@ -64,7 +64,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="6dp"
             android:fontFamily="@font/aleo_regular"
-            android:text="Rp. 800000"
+            android:text="Rp. -"
             android:textColor="#204975"
             android:textSize="36sp" />
     </LinearLayout>

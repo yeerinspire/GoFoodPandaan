@@ -2,22 +2,29 @@ package com.example.gofoodpandaan.IkiOjek
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -28,6 +35,7 @@ import androidx.core.content.ContextCompat
 import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.andrefrsousa.superbottomsheet.SuperBottomSheetFragment
 import com.example.gofoodpandaan.*
+import com.example.gofoodpandaan.IkiOjek.TrackingOrderOjekActivity
 import com.example.gofoodpandaan.Network.NetworkModule
 import com.example.gofoodpandaan.Network.ResultRoute
 import com.example.gofoodpandaan.Network.RoutesItem
@@ -61,11 +69,15 @@ import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.listener.single.PermissionListener
 import com.mancj.materialsearchbar.MaterialSearchBar
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter
@@ -73,17 +85,21 @@ import com.skyfishjy.library.RippleBackground
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.accept_order.*
+import kotlinx.android.synthetic.main.activity_cart.*
 import kotlinx.android.synthetic.main.activity_iki_ojek.*
+import kotlinx.android.synthetic.main.activity_maps.*
 import kotlinx.android.synthetic.main.activity_pilih_maps.*
+import kotlinx.android.synthetic.main.activity_register.*
+import kotlinx.android.synthetic.main.activity_tracking_order.*
 import kotlinx.android.synthetic.main.content_map.*
 import kotlinx.android.synthetic.main.fragment_bottom_sheet.*
 import org.jetbrains.anko.*
 import java.util.*
 
-class IkiOjekActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,AnkoLogger,OnMapReadyCallback {
-     var harga: Int? = null
+class IkiOjekActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,AnkoLogger{
+    var harga: Int? = null
     var pendekatan = 0
-     var jaraksebenarnya = 0f
+    var jaraksebenarnya = 0f
     private val sum: Int? = null
     var jarak: String? = null
     lateinit var sessionManager: SessionManager
@@ -93,7 +109,6 @@ class IkiOjekActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,AnkoL
     private var mapView: View? = null
     private var placesClient: PlacesClient? = null
     lateinit var predictionList : List<AutocompletePrediction>
-    lateinit var mMap: GoogleMap
     var keyy: String? = null
     var nama: String? = null
     var dialog: Dialog? = null
@@ -102,25 +117,18 @@ class IkiOjekActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,AnkoL
     private var driverFound = false
     var driverID: String? = null
 
-
     private var requestBol = false
 
     private var mLastKnownLocation: Location? = null
-var logic = 0
+    var logic = 0
 
     lateinit var auth: FirebaseAuth
     var userID : String? = null
-
-
-    //lokasi system
-    private lateinit var locationRequest : LocationRequest
-    private lateinit var locationCallback: LocationCallback
-    private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
-
+    private lateinit var mapFragment : SupportMapFragment
     companion object{
 
 
-        lateinit var peta: GoogleMap
+        private lateinit var peta: GoogleMap
         var namalokasi: String? = null
         var namalokasitujuan : String? = null
         val sheet = DemoBottomSheetFragment()
@@ -133,16 +141,26 @@ var logic = 0
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
         var hargaongkir : Int? = null
     }
+
+    //lokasi system
+    private lateinit var locationRequest : LocationRequest
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
+
+
+    @SuppressLint("MissingPermission")
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_iki_ojek)
+        val bundle: Bundle? = intent.extras
+        checkMyLocationPermission()
         init()
 
-        val bundle: Bundle? = intent.extras
-        nama = bundle!!.getString("namacostumer")
 
+        nama = bundle!!.getString("namacostumer")
         mapview.onCreate(savedInstanceState)
-        pilihmaps.visibility = View.INVISIBLE
+        ikiae.visibility = View.INVISIBLE
         accept_order.visibility = View.INVISIBLE
         sessionManager = SessionManager(this)
         materialSearchBar = findViewById(R.id.searchBar)
@@ -150,12 +168,7 @@ var logic = 0
 
         auth = FirebaseAuth.getInstance()
         userID = auth.currentUser!!.uid
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment!!.getMapAsync(this)
-        mapView = mapFragment.view
-        mFusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(this@IkiOjekActivity)
+
         Places.initialize(this@IkiOjekActivity, getString(R.string.google_maps_key))
         placesClient = Places.createClient(this)
         val token = AutocompleteSessionToken.newInstance()
@@ -239,7 +252,7 @@ var logic = 0
                 Handler().postDelayed({ materialSearchBar.clearSuggestions() }, 1000)
                 val imm =
                     getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm?.hideSoftInputFromWindow(
+                imm.hideSoftInputFromWindow(
                     materialSearchBar.windowToken,
                     InputMethodManager.HIDE_IMPLICIT_ONLY
                 )
@@ -254,7 +267,7 @@ var logic = 0
                         Log.i("mytag", "Place found: " + place.name)
                         val latLngOfPlace = place.latLng
                         if (latLngOfPlace != null) {
-                            mMap!!.moveCamera(
+                            peta.moveCamera(
                                 CameraUpdateFactory.newLatLngZoom(
                                     latLngOfPlace,
                                     DEFAULT_ZOOM.toFloat()
@@ -276,11 +289,11 @@ var logic = 0
         })
 
         btn_accept.setOnClickListener(View.OnClickListener {
-            val latitude = mMap!!.cameraPosition.target.latitude
-            val longitude = mMap!!.cameraPosition.target.longitude
+            val latitude = peta.cameraPosition.target.latitude
+            val longitude = peta.cameraPosition.target.longitude
             rippleBg!!.startRippleAnimation()
-            Companion.latitude = latitude.toString()
-            Companion.longitude = longitude.toString()
+            IkiOjekActivity.latitude = latitude.toString()
+            IkiOjekActivity.longitude = longitude.toString()
 
             startActivity<IkiOjekActivity>()
             Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
@@ -288,27 +301,65 @@ var logic = 0
 
         mapview.getMapAsync { googleMap ->
             peta = googleMap
+            peta.uiSettings.isCompassEnabled = true
+            peta.isMyLocationEnabled = true
+            peta.uiSettings.isMyLocationButtonEnabled = true
 
-            googleMap.isMyLocationEnabled = true
-            googleMap.setOnMarkerDragListener(this)
+            Dexter.withContext(this)
+                .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(object : PermissionListener {
+                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                        //aktifkan
+                        peta.uiSettings.isCompassEnabled = true
+                        peta.isMyLocationEnabled = true
+                        peta.uiSettings.isMyLocationButtonEnabled = true
+
+                        peta.setOnMyLocationClickListener {
+                            toast("button di klik")
+                            mFusedLocationProviderClient.lastLocation
+                                .addOnFailureListener { e->
+                                    toast("permission ${p0!!.permissionName} + gagal ")
+                                }.addOnSuccessListener { location ->
+                                    val userLatLng = LatLng(location.latitude,location.longitude)
+                                    peta.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,18f))
+                                }
+                            true
+                        }
+
+                        //layout
+
+
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        p0: PermissionRequest?,
+                        p1: PermissionToken?
+                    ) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                        toast("Permission ${p0!!.permissionName} + gagal")
+                    }
+                })
+
+            peta.setOnMarkerDragListener(this@IkiOjekActivity)
 
 
 
             edt_lokasitujuan.setOnClickListener {
-                mapview.visibility = View.INVISIBLE
+                mapview.visibility = View.VISIBLE
                 layoutBottomSheet.visibility = View.INVISIBLE
                 accept_order.visibility = View.INVISIBLE
-
-                pilihmaps.visibility = View.VISIBLE
+                ikiae.visibility = View.VISIBLE
                 logic = 2
             }
 
             edt_namalokasianda.setOnClickListener{
-                mapview.visibility = View.INVISIBLE
+                mapview.visibility = View.VISIBLE
                 layoutBottomSheet.visibility = View.INVISIBLE
                 accept_order.visibility = View.INVISIBLE
-
-                pilihmaps.visibility = View.VISIBLE
+                ikiae.visibility = View.VISIBLE
                 logic = 1
 
             }
@@ -318,17 +369,21 @@ var logic = 0
                     mapview.visibility = View.VISIBLE
                     layoutBottomSheet.visibility = View.VISIBLE
                     accept_order.visibility = View.INVISIBLE
-                    pilihmaps.visibility = View.INVISIBLE
-                    val lat = mMap!!.cameraPosition.target.latitude
-                    val long = mMap!!.cameraPosition.target.longitude
+                    ikiae.visibility = View.INVISIBLE
+                    val lat = peta.cameraPosition.target.latitude
+                    val long = peta.cameraPosition.target.longitude
                     latitude = lat.toString()
                     longitude = long.toString()
                     rippleBg!!.startRippleAnimation()
                     Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
-                    if (latitudetujuan !=null && longitudetujuan !=null){
-                        peta!!.clear()
-                        showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(),"posisiku")
-                        showMainMarker(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),"posisitujuan")
+                    if (latitudetujuan!=null && longitudetujuan!=null){
+                        peta.clear()
+                        showbetweenmarker(
+                            latitude!!.toDouble(), longitude!!.toDouble(),
+                            latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),
+                            "posisiku",
+                            "posoi"
+                        )
                         val nama = showName(latitude!!.toDouble(), longitude!!.toDouble())
                         edt_namalokasianda.setText(nama)
                         val namatujuan = showName(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
@@ -336,12 +391,12 @@ var logic = 0
                         mapview.visibility = View.VISIBLE
                         layoutBottomSheet.visibility = View.INVISIBLE
                         accept_order.visibility = View.VISIBLE
-                        pilihmaps.visibility = View.INVISIBLE
+                        ikiae.visibility = View.INVISIBLE
                         route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
 
                     }
                     else{
-                        peta!!.clear()
+                        peta.clear()
                         showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(),"posisiku")
 
                     }
@@ -349,8 +404,8 @@ var logic = 0
                 }
 
                 else if (logic ==2){
-                    val lat = mMap!!.cameraPosition.target.latitude
-                    val long = mMap!!.cameraPosition.target.longitude
+                    val lat = peta.cameraPosition.target.latitude
+                    val long = peta.cameraPosition.target.longitude
                     latitudetujuan = lat.toString()
                     longitudetujuan = long.toString()
                     rippleBg!!.startRippleAnimation()
@@ -358,21 +413,27 @@ var logic = 0
                     edt_namalokasianda.setText(nama)
                     val namatujuan = showName(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
                     edt_lokasitujuan.setText(namatujuan)
-                    peta!!.clear()
+                    peta.clear()
+                    showbetweenmarker(
+                        latitude!!.toDouble(), longitude!!.toDouble(),
+                        latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),
+                        "posisiku",
+                        "posoi"
+                    )
                     showMainMarker(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),"posisitujuan")
                     showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(),"posisiku")
                     Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
                     mapview.visibility = View.VISIBLE
                     layoutBottomSheet.visibility = View.INVISIBLE
                     accept_order.visibility = View.VISIBLE
-                    pilihmaps.visibility = View.INVISIBLE
+                    ikiae.visibility = View.INVISIBLE
                     route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
                 }
 
             }
 
             btn_jemput.setOnClickListener {
-                if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan !=null) {
+                if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan!=null) {
                     when (requestBol) {
                         false -> {
                             requestBol = true
@@ -389,13 +450,15 @@ var logic = 0
             }
 
 
-            if (latitude !=null && longitude !=null && latitudetujuan !=null && longitudetujuan !=null){
-              route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
+            if (latitude!=null && longitude!=null && latitudetujuan!=null && longitudetujuan!=null){
+                route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
             }
 
 
 
+
         }
+
 
 
     }
@@ -410,15 +473,50 @@ var logic = 0
         locationCallback = object : LocationCallback(){
             override fun onLocationResult(locationResult: LocationResult?) {
                 super.onLocationResult(locationResult)
-                latitude = locationResult!!.lastLocation.latitude.toString()
-                longitude = locationResult!!.lastLocation.longitude.toString()
-                val newPos = LatLng(locationResult.lastLocation.latitude,locationResult.lastLocation.longitude)
+                val newPos = LatLng(locationResult!!.lastLocation.latitude,locationResult.lastLocation.longitude)
+                latitude = locationResult.lastLocation.latitude.toString()
+                longitude = locationResult.lastLocation.longitude.toString()
                 peta.moveCamera(CameraUpdateFactory.newLatLngZoom(newPos,18f))
             }
 
         }
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        mFusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback,Looper.myLooper())
+        mFusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback,
+            Looper.myLooper())
+
+    }
+
+    fun showbetweenmarker(
+        lat: Double,
+        lng: Double,
+        lattujuan: Double,
+        lngtujuan: Double,
+        namaawal: String,
+        namatujuan: String
+    ) {
+        val marker1 =
+            LatLng(java.lang.Double.valueOf(lat), java.lang.Double.valueOf(lng))
+        val marker2 = LatLng(lattujuan, lngtujuan)
+
+        val markersList: MutableList<Marker> = ArrayList()
+        val youMarker: Marker =
+            peta.addMarker(MarkerOptions().position(marker1).title(namaawal))
+        val playerMarker: Marker =
+            peta.addMarker(MarkerOptions().position(marker2).title(namatujuan))
+
+        markersList.add(youMarker)
+        markersList.add(playerMarker)
+
+        val builder = LatLngBounds.Builder()
+        for (m in markersList) {
+            builder.include(m.position)
+        }
+        val padding = 50
+        val bounds = builder.build()
+        val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+        peta.setOnMapLoadedCallback(GoogleMap.OnMapLoadedCallback { //animate camera here
+            peta.animateCamera(cu)
+        })
 
     }
 
@@ -448,25 +546,19 @@ var logic = 0
             val jarakValue = routes[0]?.legs?.get(0)?.distance?.value
             val pricex = jarakValue!!.toDouble().let { Math.round(it) }
             val price = pricex.div(1000.0).times(2000.0)
-             jaraksebenarnya = jarakValue.toString().toFloat() / 1000
-             pendekatan = Math.round(jaraksebenarnya)
-            peta?.let {
-                point?.let { it1 ->
-                    DirectionMapsV2.gambarRoute(
-                        it,
-                        it1
-                    )
-                }
+            jaraksebenarnya = jarakValue.toString().toFloat() / 1000
+            pendekatan = Math.round(jaraksebenarnya)
+            peta.let {
+                point?.let { it1 -> DirectionMapsV2.gambarRoute(it, it1)                    }
             }
 
             if (pendekatan <= 5) {
-                toast("halo")
                 harga = 9000
                 txt_hargaongkir.text = "Rp. $harga"
                 txt_jarakojek.text = "Rp. $jarak"
-            } else if (pendekatan >5) {
+            } else if (pendekatan > 5) {
                 harga = 2000
-                hargaongkir = pendekatan * harga!!
+                hargaongkir = pendekatan * harga!! - 1000
                 txt_hargaongkir.text = "Rp. ${pendekatan * harga!!}  ($jarak)"
                 txt_jarakojek.text = "Rp. ${pendekatan* harga!!}"
             }
@@ -526,9 +618,7 @@ var logic = 0
         mencaridriverterdekat()
 
 /*
-
         val hei = keyy
-
         hei?.let { bookingHistoryUser(it) }
         myRef.child(keyy ?: "").setValue(booking)
 */
@@ -589,7 +679,6 @@ var logic = 0
                                     "longitudeawal" to longitude.toString(),
                                     "latitudetujuan" to latitudetujuan.toString(),
                                     "longitudetujuan" to longitudetujuan.toString())
-                                finish()
                             }
                         }
 
@@ -612,67 +701,49 @@ var logic = 0
 
     }
 
-
-
-    fun takeLocation(status: Int) {
-
-        try {
-            this.let { Places.initialize(it, "AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE") }
-            val fields = arrayListOf(
-                Place.Field.ID, Place.Field.NAME,
-                Place.Field.LAT_LNG, Place.Field.ADDRESS
+    private fun checkMyLocationPermission() {
+        Dexter.withActivity(this)
+            .withPermissions(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
             )
-            val intent = this.let {
-                Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                    .build(it)
-            }
-            startActivityForResult(intent, status)
-        } catch (e: GooglePlayServicesRepairableException) {
-            // TODO: Handle the error.
-        } catch (e: GooglePlayServicesNotAvailableException) {
-            // TODO: Handle the error.
-        }
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                    when {
+                        report!!.areAllPermissionsGranted() -> {
+                            /** Do Something when all permission was granted
+                             *
+                             * */
+                            Log.d("PERMISSIONCHECK", "ALL PERMISSION GRANTED")
+                        }
+                        report.isAnyPermissionPermanentlyDenied -> {
+                            /** Do Something when any permission permanently blocked
+                             *
+                             * */
+                            Log.d("PERMISSIONCHECK", "ANY PERMISSION PERMANENTLY DENIED")
+                        }
+                        else -> {
+                            /** Do something when any permission denied
+                             *
+                             * */
+                            Log.d("PERMISSIONCHECK", "ANY PERMISSION DENIED")
+                        }
+                    }
+                }
 
-    }
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: MutableList<PermissionRequest>?,
+                    token: PermissionToken?
+                ) {
+                    /** This will display a dialog if you need to allow permissions
+                     *
+                     * */
+                    Log.d("PERMISSIONCHECK", "onPermissionRationaleShouldBeShown")
+                    token?.continuePermissionRequest()
+                }
 
-    fun showPermission() {
-        showGps()
-        if (this.let { ContextCompat.checkSelfPermission(
-                    it,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)
-            } != PackageManager.PERMISSION_GRANTED) {
-
-            if (this.let {
-                    ActivityCompat.shouldShowRequestPermissionRationale(
-                        it,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
-                    )
-                }) {
-
-
-                showGps()
-            } else {
-                requestPermissions(
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    ), 1
-                )
-            }
-        }
-    }
-
-    private fun showGps() {
-
-        val gps = GPSTracker(this)
-        if (gps.canGetLocation()) {
-            latitude = gps.latitude.toString()
-            longitude = gps.longitude.toString()
-            edt_namalokasianda.setText(namalokasi)
-
-        } else gps.showSettingGps()
-
-
+            })
+            .check()
     }
 
 
@@ -697,6 +768,7 @@ var logic = 0
             }
         }
     }
+
 
     override fun onResume() {
         super.onResume()
@@ -759,26 +831,26 @@ var logic = 0
     fun showMainMarker(lat: Double, lon: Double, msg: String) {
 
         val coordinate = LatLng(lat, lon)
-        peta.addMarker(
+        peta?.addMarker(
             MarkerOptions().position(coordinate).title(msg)
                 .icon(BitmapDescriptorFactory.defaultMarker())
                 .draggable(true)
         )
         val cameraPosition =
             CameraPosition.Builder().target(LatLng(lat, lon)).zoom(17f).build()
-        peta.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        peta?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
     fun showTujuanMarker(lat: Double, lon: Double, msg: String) {
 
         val coordinate = LatLng(lat, lon)
-        peta.addMarker(
+        peta?.addMarker(
             MarkerOptions().position(coordinate).title(msg)
                 .icon(BitmapDescriptorFactory.defaultMarker())
                 .draggable(true)
         )
         val cameraPosition =
             CameraPosition.Builder().target(LatLng(lat, lon)).zoom(17f).build()
-        peta.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+        peta?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 
     override fun onMarkerDragEnd(p0: Marker?) {
@@ -796,58 +868,6 @@ var logic = 0
 
     }
 
-
-    override fun onMapReady(googleMap: GoogleMap?) {
-        mMap = googleMap!!
-
-        Dexter.withContext(this)
-            .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            .withListener(object :PermissionListener{
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                    //aktifkan
-                    mMap.isMyLocationEnabled = true
-                    mMap.uiSettings.isMyLocationButtonEnabled = true
-                    mMap.setOnMyLocationClickListener {
-                        toast("button di klik")
-                        mFusedLocationProviderClient.lastLocation
-                            .addOnFailureListener { e->
-                                toast("permission ${p0!!.permissionName} + gagal ")
-                            }.addOnSuccessListener { location ->
-                                val userLatLng = LatLng(location.latitude,location.longitude)
-                                peta.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,18f))
-                            }
-                        true
-                    }
-
-                    //layout
-
-                        }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: PermissionRequest?,
-                    p1: PermissionToken?
-                ) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                    toast("Permission ${p0!!.permissionName} + gagal")
-                }
-            })
-
-        if (mapView != null && mapView!!.findViewById<View?>("1".toInt()) != null) {
-            val locationButton =
-                (mapView!!.findViewById<View>("1".toInt())
-                    .parent as View).findViewById<View>("2".toInt())
-            val layoutParams =
-                locationButton.layoutParams as RelativeLayout.LayoutParams
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-            layoutParams.setMargins(0, 0, 40, 180)
-        }
-
-
-    }
 
 }
 
@@ -888,6 +908,3 @@ class BottomAccept : SuperBottomSheetFragment() {
 
     override fun getPeekHeight(): Int = 200
 }
-
-
-

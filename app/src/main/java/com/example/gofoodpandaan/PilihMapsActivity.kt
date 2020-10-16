@@ -9,7 +9,6 @@ import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -20,7 +19,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.example.gofoodpandaan.IkiOjek.IkiOjekActivity
-import com.example.gofoodpandaan.IkiOjek.IkiOjekActivity.Companion.peta
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -42,61 +40,45 @@ import com.google.android.libraries.places.api.model.TypeFilter
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.single.PermissionListener
 import com.mancj.materialsearchbar.MaterialSearchBar
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter
 import com.skyfishjy.library.RippleBackground
 import kotlinx.android.synthetic.main.content_map.*
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
 import java.util.*
 
 class PilihMapsActivity : AppCompatActivity(), OnMapReadyCallback {
+    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     private var placesClient: PlacesClient? = null
     lateinit var predictionList : List<AutocompletePrediction>
-    private lateinit var mMap: GoogleMap
+    private var mMap: GoogleMap? = null
 
     private var rippleBg: RippleBackground? = null
     lateinit var sessionManager: SessionManager
+    private var locationCallback: LocationCallback? = null
 
     private var mLastKnownLocation: Location? = null
+   companion object{
+       private const val DEFAULT_ZOOM = 15
 
-
-    //lokasi system
-    private lateinit var locationRequest : LocationRequest
-    private lateinit var locationCallback: LocationCallback
-    private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
-
-    companion object{
-
-        private const val DEFAULT_ZOOM = 15
-
-    }
+   }
 
     private var mapView: View? = null
     lateinit var materialSearchBar: MaterialSearchBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pilih_maps)
-        init()
         sessionManager = SessionManager(this)
-
-        materialSearchBar = findViewById(R.id.searchBar)
-        rippleBg = findViewById(R.id.ripple_bg)
-
 
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)
+        materialSearchBar = findViewById(R.id.searchBar)
+        rippleBg = findViewById(R.id.ripple_bg)
+
         mapView = mapFragment.view
         mFusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(this@PilihMapsActivity)
-
         Places.initialize(this@PilihMapsActivity, getString(R.string.google_maps_key))
         placesClient = Places.createClient(this)
         val token = AutocompleteSessionToken.newInstance()
@@ -217,11 +199,11 @@ class PilihMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
 
         btn_accept.setOnClickListener(View.OnClickListener {
-            val latitude = mMap.cameraPosition.target.latitude
-            val longitude = mMap.cameraPosition.target.longitude
+            val latitude = mMap!!.cameraPosition.target.latitude
+            val longitude = mMap!!.cameraPosition.target.longitude
             rippleBg!!.startRippleAnimation()
-            IkiOjekActivity.latitude = latitude.toString()
-            IkiOjekActivity.longitude = longitude.toString()
+                IkiOjekActivity.latitude = latitude.toString()
+                IkiOjekActivity.longitude = longitude.toString()
 
             startActivity<IkiOjekActivity>()
             Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
@@ -233,6 +215,7 @@ class PilihMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 51) {
             if (resultCode == RESULT_OK) {
+                getDeviceLocation()
 
             }
         }
@@ -242,41 +225,26 @@ class PilihMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        peta = googleMap!!
-        Dexter.withContext(this)
-            .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            .withListener(object : PermissionListener {
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                    //aktifkan
-                    mMap.isMyLocationEnabled = true
-                    mMap.uiSettings.isMyLocationButtonEnabled = true
-                    mMap.setOnMyLocationClickListener {
-                        toast("button di klik")
-                        mFusedLocationProviderClient.lastLocation
-                            .addOnFailureListener { e->
-                                toast("permission ${p0!!.permissionName} + gagal ")
-                            }.addOnSuccessListener { location ->
-                                val userLatLng = LatLng(location.latitude,location.longitude)
-                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userLatLng,18f))
-                            }
-                        true
-                    }
-
-                    //layout
-
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: PermissionRequest?,
-                    p1: PermissionToken?
-                ) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                    toast("Permission ${p0!!.permissionName} + gagal")
-                }
-            })
+        mMap = googleMap
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        mMap!!.isMyLocationEnabled = true
+        mMap!!.uiSettings.isMyLocationButtonEnabled = true
 
         if (mapView != null && mapView!!.findViewById<View?>("1".toInt()) != null) {
             val locationButton =
@@ -289,30 +257,100 @@ class PilihMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             layoutParams.setMargins(0, 0, 40, 180)
         }
 
+        //check if gps is enabled or not and then request user to enable it
 
+        //check if gps is enabled or not and then request user to enable it
+        val locationRequest = LocationRequest.create()
+        locationRequest.interval = 10000
+        locationRequest.fastestInterval = 5000
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
 
-    }
+        val builder =
+            LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
 
-    private fun init(){
-        locationRequest = LocationRequest()
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        locationRequest.setFastestInterval(3000)
-        locationRequest.interval = 5000
-        locationRequest.setSmallestDisplacement(10f)
+        val settingsClient = LocationServices.getSettingsClient(this@PilihMapsActivity)
+        val task =
+            settingsClient.checkLocationSettings(builder.build())
 
-        locationCallback = object : LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult?) {
-                super.onLocationResult(locationResult)
-                val newPos = LatLng(locationResult!!.lastLocation.latitude,locationResult.lastLocation.longitude)
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newPos,18f))
-            }
+        task.addOnSuccessListener(
+            this@PilihMapsActivity,
+            OnSuccessListener<LocationSettingsResponse?> { getDeviceLocation() })
 
+        task.addOnFailureListener(this@PilihMapsActivity,
+            OnFailureListener { e ->
+                if (e is ResolvableApiException) {
+                    try {
+                        e.startResolutionForResult(this@PilihMapsActivity, 51)
+                    } catch (e1: IntentSender.SendIntentException) {
+                        e1.printStackTrace()
+                    }
+                }
+            })
+
+        mMap!!.setOnMyLocationButtonClickListener {
+            if (materialSearchBar.isSuggestionsVisible) materialSearchBar.clearSuggestions()
+            if (materialSearchBar.isSearchEnabled) materialSearchBar.disableSearch()
+            false
         }
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        mFusedLocationProviderClient.requestLocationUpdates(locationRequest,locationCallback,
-            Looper.myLooper())
+        getDeviceLocation()
 
     }
 
+    @SuppressLint("MissingPermission")
+    private fun getDeviceLocation() {
+        mFusedLocationProviderClient!!.lastLocation
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    mLastKnownLocation = task.result
+                    if (mLastKnownLocation != null) {
+                        mMap!!.moveCamera(
+                            CameraUpdateFactory.newLatLngZoom(
+                                LatLng(
+                                    mLastKnownLocation!!.getLatitude(),
+                                    mLastKnownLocation!!.getLongitude()
+                                ), DEFAULT_ZOOM.toFloat()
+                            )
+                        )
+                    } else {
+                        val locationRequest = LocationRequest.create()
+                        locationRequest.interval = 10000
+                        locationRequest.fastestInterval = 5000
+                        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+                        locationCallback =
+                            object : LocationCallback() {
+                                override fun onLocationResult(locationResult: LocationResult) {
+                                    super.onLocationResult(locationResult)
+                                    if (locationResult == null) {
+                                        return
+                                    }
+                                    mLastKnownLocation = locationResult.lastLocation
+                                    mMap!!.moveCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            LatLng(
+                                                mLastKnownLocation!!.getLatitude(),
+                                                mLastKnownLocation!!.getLongitude()
+                                            ), DEFAULT_ZOOM.toFloat()
+                                        )
+                                    )
+                                    mFusedLocationProviderClient!!.removeLocationUpdates(
+                                        locationCallback
+                                    )
+                                }
+                            }
+                        mFusedLocationProviderClient!!.requestLocationUpdates(
+                            locationRequest,
+                            locationCallback,
+                            null
+                        )
+                    }
+                } else {
+                    Toast.makeText(
+                        this@PilihMapsActivity,
+                        "unable to get last location",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
 
 }

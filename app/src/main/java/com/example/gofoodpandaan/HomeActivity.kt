@@ -1,7 +1,10 @@
 package com.example.gofoodpandaan
 
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.gofoodpandaan.UiaplikasiIKI.HomeFragment
 import com.example.gofoodpandaan.UiaplikasiIKI.NotifikasiFragment

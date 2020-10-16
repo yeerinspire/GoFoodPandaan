@@ -30,8 +30,6 @@
         <activity android:name=".IkiTaksi.TrackingOrderTaksiActivity" />
         <activity android:name=".IkiTaksi.IkiTaksiActivity" />
         <activity android:name=".IkiOjek.TrackingOrderOjekActivity" />
-        <activity android:name=".PilihMapsTujuanActivity" />
-        <activity android:name=".PilihMapsActivity" />
         <activity android:name=".IkiOjek.IkiOjekActivity" />
         <activity android:name=".IkiWarung.FoodDelivery.chatActivity" />
         <activity android:name=".Auth.OTPActivity" />
