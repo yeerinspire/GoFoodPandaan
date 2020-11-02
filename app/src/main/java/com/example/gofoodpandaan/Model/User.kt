@@ -3,14 +3,9 @@ package com.example.gofoodpandaan.Model
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
-/**
- * Created by ansh on 25/08/18.
- */
-@Parcelize
-data class User(
-        val uid: String,
-        val name: String,
-        val profileImageUrl: String?
-) : Parcelable {
-    constructor() : this("", "", "")
+data class User(val name: String,
+                val bio: String,
+                val profilePicturePath: String?,
+                val registrationTokens: MutableList<String>) {
+    constructor(): this("", "", null, mutableListOf())
 }

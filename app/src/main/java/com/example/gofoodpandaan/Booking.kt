@@ -13,6 +13,7 @@ class Booking {
     var jarak : String? = null
     var status : Int? = null
     var driver : String? = null
+    var idtoko : String? = null
 
     init {
 

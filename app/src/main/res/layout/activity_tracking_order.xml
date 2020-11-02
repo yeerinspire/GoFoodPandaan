@@ -1,184 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IkiWarung.FoodDelivery.TrackingOrderActivity"
+    tools:context=".IkiOjek.TrackingOrderOjekActivity"
     android:background="#D5CFCF"
     >
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/rv_order1"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:background="#ffffff"
-        >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-
-            <TextView
-                android:id="@+id/posisiku"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="POSISI ANDA"
-                android:textSize="20dp"
-                android:maxLength="50"
-                />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#878787"
-                />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nama Toko"
-                android:textSize="20dp"
-                android:id="@+id/namatoko"
-                />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#878787"
-                />
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Jarak anda ke toko"
-                android:textSize="20dp"
-                android:id="@+id/jarakketoko"
-                />
-
-        </LinearLayout>
-
-
-    </RelativeLayout>
     <com.google.android.gms.maps.MapView
-        android:id="@+id/map"
+        android:id="@+id/maporder"
         android:layout_below="@+id/rv_order1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".TrackingOrder"
+        android:layout_marginBottom="225dp"
+        tools:context=".IkiOjek.TrackingOrderOjekActivity"
         android:layout_above="@+id/card"
         />
-
-    <androidx.cardview.widget.CardView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_alignParentBottom="true"
-        app:cardBackgroundColor="@color/colorWhite"
-        map:cardCornerRadius="10dp"
-        android:id="@+id/card"
-        android:layout_marginBottom="10dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
-        >
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/fotodriver"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/popularfood1"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/txt_tokho"
-                android:text="Nama Driver"
-                android:layout_marginLeft="10dp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:layout_toRightOf="@id/fotodriver"
-                android:layout_toEndOf="@id/fotodriver"
-                android:layout_marginStart="10dp" />
-
-            <TextView
-                android:id="@+id/txt_harga"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@id/fotodriver"
-                android:layout_toEndOf="@id/fotodriver"
-                android:text="Harga :"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/fbutton_color_green_sea"/>
+    <include layout="@layout/sheet_orderanwarung" />
 
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="60dp"
-                android:layout_marginLeft="10dp"
-                android:layout_toRightOf="@id/fotodriver"
-                android:layout_toEndOf="@id/fotodriver"
-                android:text="status perjalanan driver"
-                android:textSize="20sp"
-                android:id="@+id/txt_statusperjalanan"
-                android:textStyle="bold"
-                android:textColor="@color/fbutton_color_green_sea"/>
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/fotodriver"
-                android:layout_marginTop="5dp"
-                android:orientation="horizontal"
-                >
-
-                <ImageView
-                    android:id="@+id/telfon_ojek"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/ic_baseline_call_24"
-                    android:layout_marginLeft="20dp"
-                    />
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/ic_baseline_textsms_24"
-                    android:layout_centerInParent="true"
-                    android:id="@+id/btn_chat"
-                    />
-
-                <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:background="@drawable/ic_baseline_call_24"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginRight="20dp"
-                    android:layout_alignParentRight="true" />
-
-            </RelativeLayout>
-
-        </RelativeLayout>
-
-
-    </androidx.cardview.widget.CardView>
-
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

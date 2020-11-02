@@ -17,7 +17,8 @@ class DriverWorking {
     var uid : String? = null
     var harga : String? = null
     var ongkir : String? = null
-
+    var jarak : String? = null
+    var hargapelanggan : String? = null
 
     constructor(){
 
@@ -38,7 +39,9 @@ class DriverWorking {
         telfondriver: String?,
         uid: String?,
         harga: String?,
-        ongkir: String?
+        ongkir: String?,
+        jarak: String?,
+        hargapelanggan: String?
     ) {
         this.driver = driver
         this.namatoko = namatoko
@@ -55,6 +58,7 @@ class DriverWorking {
         this.uid = uid
         this.harga = harga
         this.ongkir = ongkir
+        this.jarak = jarak
+        this.hargapelanggan = hargapelanggan
     }
-
 }

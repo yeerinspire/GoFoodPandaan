@@ -10,6 +10,7 @@
     app:layout_behavior="@string/bottom_sheet_behavior">
 
 
+
     <Button
         android:id="@+id/btn_cancel"
         android:layout_width="match_parent"
@@ -25,6 +26,79 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/btn_cancel"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.88">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/kotakbirusolid">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/alef_bold"
+                android:text="TUNAI"
+                android:textColor="#ffffff"
+                android:textSize="18dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:fontFamily="@font/alef_bold"
+                android:text="Rp. 0 "
+                android:id="@+id/txt_tunai"
+                android:textColor="#ffffff"
+
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="30dp"
+            android:background="@drawable/kotakgarishitam">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/alef_bold"
+                android:text="PAYLESS"
+                android:textColor="#204975"
+                android:textSize="18dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:fontFamily="@font/alef_bold"
+                android:text="Rp. 0 "
+                android:textColor="#204975"
+
+                />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,9 +109,45 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:paddingLeft="5dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/kotakgarishitam"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jarak = 0KM"
+                android:fontFamily="@font/aleo_regular"
+                android:textSize="10dp"
+                android:textColor="#204975"
+                android:id="@+id/txt_jarak"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tunai = Rp. 0"
+                android:id="@id/txt_harga"
+                android:fontFamily="@font/aleo_regular"
+                android:textSize="10dp"
+                android:textColor="#204975"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="10dp">
 
             <ImageView
                 android:id="@+id/img_fotodriver"
@@ -46,24 +156,15 @@
                 android:src="@drawable/profil" />
 
             <TextView
-                android:id="@+id/costumer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@id/img_fotodriver"
-                android:fontFamily="@font/open_sans_bold"
-                android:text="Nama Driver : "
-                android:textSize="17dp" />
-
-            <TextView
                 android:layout_marginLeft="5dp"
                 android:id="@+id/txt_namadriver"
+                android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/costumer"
                 android:layout_toRightOf="@id/img_fotodriver"
-                android:fontFamily="@font/open_sans_bold"
+                android:fontFamily="@font/alef_bold"
                 android:text="Boss Alfan Ganteng"
+                android:textColor="#204975"
                 android:textSize="17dp" />
             <TextView
                 android:layout_marginLeft="5dp"
@@ -72,17 +173,20 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/txt_namadriver"
                 android:layout_toRightOf="@id/img_fotodriver"
-                android:fontFamily="@font/open_sans_bold"
+                android:fontFamily="@font/aleo_regular"
+                android:textColor="#A4A4A4"
                 android:text="Yamaha Olong"
                 android:textSize="15dp" />
             <TextView
                 android:layout_marginLeft="5dp"
                 android:id="@+id/txt_noplat"
+                android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/txt_namamotor"
                 android:layout_toRightOf="@id/img_fotodriver"
-                android:fontFamily="@font/open_sans_bold"
+                android:fontFamily="@font/aleo_regular"
+                android:textColor="#A4A4A4"
                 android:text="N 1234 AY"
                 android:textSize="15dp" />
 
@@ -92,7 +196,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="20dp"
                 android:id="@+id/rating"
                 android:text="Rating"
                 android:textStyle="bold"
@@ -102,21 +206,21 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="30dp"
                 android:src="@drawable/star"
+                android:layout_toLeftOf="@+id/txt_rating"
                 android:id="@+id/btn_chat"
                 android:layout_below="@id/rating"
+
                 />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_below="@+id/rating"
-                android:layout_marginRight="5dp"
                 android:id="@+id/txt_rating"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="5dp"
                 android:text="5.0"
                 android:textStyle="bold"
 
@@ -135,16 +239,26 @@
                 android:layout_centerHorizontal="true"
                 >
 
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/buttontelepon"
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/btn_telfonojek"
+                    android:background="@drawable/kotakbiruovalsolid"
+                    android:text="Telepon"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/alef_bold"
+                    android:textColor="#ffffff"
+
                     />
-                <ImageButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
                     android:layout_marginLeft="20dp"
-                    android:background="@drawable/buttonchat"
+                    android:text="Kirim Pesan"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/alef_bold"
+                    android:textColor="#ffffff"
+                    android:background="@drawable/kotakbiruovalsolid"
                     android:id="@+id/btn_chatojek"
                     />
             </LinearLayout>

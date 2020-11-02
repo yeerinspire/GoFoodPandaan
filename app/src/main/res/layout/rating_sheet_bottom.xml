@@ -6,34 +6,46 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/btn_inputkomen"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/kotakmerah"
+        android:text="SELESAI"
+        android:textSize="31dp"
+        android:textColor="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/edt_komentar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/kotakmelengkungpolos"
         android:ems="10"
         android:inputType="textPersonName"
         android:paddingStart="10dp"
-        android:background="@drawable/kotakmelengkungpolos"
+        android:paddingLeft="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ratingBar"
-        app:layout_constraintVertical_bias="0.26999998"
-        android:paddingLeft="10dp" />
+        app:layout_constraintVertical_bias="0.07999998" />
 
     <TextView
         android:id="@+id/textView28"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nilai Costumer Anda!"
         android:fontFamily="@font/alef_regular"
+        android:text="Nilai Costumer Anda!"
         android:textColor="#204975"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout6"
-        app:layout_constraintVertical_bias="0.26" />
+        app:layout_constraintVertical_bias="0.16000003" />
 
     <LinearLayout
         android:id="@+id/linearLayout6"

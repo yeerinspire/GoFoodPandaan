@@ -38,6 +38,9 @@ class RegisterActivity : AppCompatActivity() {
         btn_lanjut.setOnClickListener {
             daftar()
         }
+        imageView11.setOnClickListener {
+            startActivity<AuthActivity>()
+        }
     }
     var notelp : String? = null
     private fun daftar() {

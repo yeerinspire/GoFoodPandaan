@@ -20,6 +20,48 @@ class SessionManager(private val context: Context?) {
         return Pref?.getBoolean(islogin,false)
     }
 
+
+    private val iduser = "iduser"
+    fun setiduser(check:String)
+    {
+        editor?.putString(iduser,check)
+        editor?.commit()
+    }
+
+    fun getiduser():String?
+    {
+        return Pref?.getString(iduser,"")
+    }
+
+    private val logicwarung = "logicwarung"
+    fun setlogicwarung(check:String)
+    {
+        editor?.putString(logicwarung,check)
+        editor?.commit()
+    }
+
+    fun getlogicwarung():String?
+    {
+        return Pref?.getString(logicwarung,"")
+    }
+
+
+
+    private val telefon = "telefon"
+    fun settelefon(check:String)
+    {
+        editor?.putString(telefon,check)
+        editor?.commit()
+    }
+
+    fun gettelefon():String?
+    {
+        return Pref?.getString(telefon,"")
+    }
+
+
+
+
     private val status = "status"
     fun setstatuslelang(check:String?)
     {

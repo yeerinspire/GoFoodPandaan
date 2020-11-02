@@ -1,260 +1,308 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".IkiWarung.FoodDelivery.DetailFoodActivity"
-     >
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_cart"
-        android:layout_margin="16dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" />
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/faboff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_cartoff"
-        android:layout_margin="16dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" />
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:background="#C1C1C1"
+     >
 
-    >
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#C1C1C1"
+        android:id="@+id/scrollView"
+        android:paddingBottom="65dp"
+        android:clipToPadding="false"
+
         >
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="#ffffff"
             >
 
-            <ImageView
-                android:id="@+id/foto"
-                android:layout_width="0dp"
-                android:layout_height="170dp"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@tools:sample/avatars" />
+                android:background="#ffffff"
+                >
 
-            <TextView
-                android:id="@+id/txt_namatoko"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Nama food"
-                android:textSize="20dp"
-                android:fontFamily="@font/open_sans_semibold"
-                android:textColor="#204975"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/foto" />
+                <ImageView
+                    android:id="@+id/foto"
+                    android:layout_width="0dp"
+                    android:layout_height="170dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:srcCompat="@tools:sample/avatars" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout5"
+                <TextView
+                    android:id="@+id/txt_namatoko"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Nama food"
+                    android:textSize="20dp"
+                    android:fontFamily="@font/open_sans_semibold"
+                    android:textColor="#204975"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/foto" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/view4">
+
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <com.alfanshter.jatimpark.customfont.semibold
+                            android:id="@+id/rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="3dp"
+                            android:gravity="center"
+                            android:text="Rating"
+                            android:textColor="@color/txt_color"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
+                            android:text="Memuaskan" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <com.alfanshter.jatimpark.customfont.semibold
+                            android:id="@+id/jaraktoko"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="3dp"
+                            android:gravity="center"
+                            android:text="Jarak"
+                            android:textColor="@color/txt_color"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/distance"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
+                            android:text="5.3 KM" />
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <com.alfanshter.jatimpark.customfont.semibold
+                            android:id="@+id/ongkirtoko"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="3dp"
+                            android:gravity="center"
+                            android:text="Ongkos Kirim"
+                            android:textColor="@color/txt_color"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center"
+                            android:text="7000"
+                            android:id="@+id/price_ongkir"
+                            />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/view4"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:background="#BABABA"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txt_namatoko" />
+
+                <View
+                    android:id="@+id/view5"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="8dp"
+                    android:background="#BABABA"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <RelativeLayout
+                android:id="@+id/constraintLayout3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
+                android:background="#ffffff"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view4">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Makanan"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_makanan"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/textView2">
 
-                    <com.alfanshter.jatimpark.customfont.semibold
-                        android:id="@+id/rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="3dp"
-                        android:gravity="center"
-                        android:text="Rating"
-                        android:textColor="@color/txt_color"
-                        android:textSize="12sp" />
+                </androidx.recyclerview.widget.RecyclerView>
+            </RelativeLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center"
-                        android:text="Memuaskan" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <com.alfanshter.jatimpark.customfont.semibold
-                        android:id="@+id/jaraktoko"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="3dp"
-                        android:gravity="center"
-                        android:text="Jarak"
-                        android:textColor="@color/txt_color"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center"
-                        android:text="5.3 KM" />
-
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <com.alfanshter.jatimpark.customfont.semibold
-                        android:id="@+id/ongkirtoko"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="3dp"
-                        android:gravity="center"
-                        android:text="Ongkos Kirim"
-                        android:textColor="@color/txt_color"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center"
-                        android:text="7000" />
-
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <View
-                android:id="@+id/view4"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:background="#BABABA"
-                android:visibility="visible"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffffff"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_namatoko" />
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
-            <View
-                android:id="@+id/view5"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_marginTop="8dp"
-                android:background="#BABABA"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout5" />
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Minuman"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
 
-
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_minuman"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@id/textView3"
+                    android:layout_marginTop="16dp" />
+            </RelativeLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <RelativeLayout
-            android:id="@+id/constraintLayout3"
+    </ScrollView>
+
+    <include layout="@layout/bottomsheet_cart"/>
+    <include layout="@layout/bottomsheet_tambahmakanan"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_tagih"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="8dp"
+        android:elevation="16dp"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:weightSum="2"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ffffff"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:text="Makanan"
-                android:textSize="20dp"
-                android:textStyle="bold"
-            />
+            <LinearLayout
+                android:orientation="vertical"
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/btn_checkout"
+                android:padding="8dp"
+                android:layout_weight="1.7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_makanan"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/textView2">
+                <TextView
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#fff"
+                    android:text="Tagih"
+                    android:maxLines="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/total_price"
+                    android:textSize="16sp"
+                    android:text="Rp.0"
+                    android:textColor="#fff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
 
-            </androidx.recyclerview.widget.RecyclerView>
-        </RelativeLayout>
+            </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#ffffff"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
+            <ImageButton
+                android:padding="8dp"
+                android:layout_weight="0.3"
+                android:id="@+id/btn_detail"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_format_list_bulleted_black_24dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="10dp"
-                android:text="Minuman"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_minuman"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/textView3"
-                android:layout_marginTop="16dp" />
-        </RelativeLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</ScrollView>
+        </LinearLayout>
 
 
-</RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

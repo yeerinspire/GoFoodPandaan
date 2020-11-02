@@ -80,6 +80,7 @@ class LoginActivity : AppCompatActivity() {
                             sessionManager.setLogin(true)
                             startActivity<HomeActivity>()
                             progressDialog.dismiss()
+                            finish()
                         }
                         else
                         {

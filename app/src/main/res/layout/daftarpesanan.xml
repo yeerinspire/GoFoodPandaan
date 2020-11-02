@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="30pt"
+        android:layout_height="30pt"
+        android:background="@drawable/time"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/imagejam"
+        />
+
+    <LinearLayout
+        android:id="@+id/lv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imagejam"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kode Order :"
+            android:id="@+id/kodeorder"
+            android:textSize="17sp"
+            android:fontFamily="@font/alegreya_bold"
+            />
+        <TextView
+            android:layout_marginTop="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order IKI-Ojek"
+            android:id="@+id/status"
+            android:fontFamily="@font/alegreya_regular"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lokasi Awal - Lokasi Tujuan"
+            android:fontFamily="@font/alegreya_regular"
+            />
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/panah"
+        android:layout_alignParentRight="true" />
+
+</RelativeLayout>

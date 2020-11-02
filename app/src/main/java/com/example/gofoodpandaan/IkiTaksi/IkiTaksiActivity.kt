@@ -3,6 +3,7 @@ package com.example.gofoodpandaan.IkiTaksi
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -13,6 +14,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -26,10 +28,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.alfanshter.udinlelangfix.Session.SessionManager
 import com.andrefrsousa.superbottomsheet.SuperBottomSheetFragment
+import com.directions.route.*
 import com.example.gofoodpandaan.*
+import com.example.gofoodpandaan.IkiOjek.TrackingOrderOjekActivity
 import com.example.gofoodpandaan.Network.NetworkModule
 import com.example.gofoodpandaan.Network.ResultRoute
 import com.example.gofoodpandaan.Network.RoutesItem
+import com.example.gofoodpandaan.Notification.NotifikasiData
+import com.example.gofoodpandaan.Notification.PushNotifikasi
+import com.example.gofoodpandaan.Notification.RetrofitInstance
 import com.example.gofoodpandaan.R
 import com.firebase.geofire.GeoFire
 import com.firebase.geofire.GeoLocation
@@ -48,18 +55,27 @@ import com.google.android.gms.maps.model.*
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.AutocompletePrediction
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.TypeFilter
+import com.google.android.libraries.places.api.model.*
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.AutocompleteActivity
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.karumi.dexter.listener.single.PermissionListener
 import com.mancj.materialsearchbar.MaterialSearchBar
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter
 import com.skyfishjy.library.RippleBackground
@@ -67,84 +83,113 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.accept_order.*
 import kotlinx.android.synthetic.main.activity_iki_taksi.*
-import kotlinx.android.synthetic.main.activity_pilih_maps.*
+
 import kotlinx.android.synthetic.main.content_map.*
 import kotlinx.android.synthetic.main.fragment_bottom_sheet.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.*
 import java.util.*
 
-class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,AnkoLogger,OnMapReadyCallback {
+const val TOPIC = "/topics/myTopic2"
+
+class IkiTaksiActivity : AppCompatActivity(), GoogleMap.OnMarkerDragListener, AnkoLogger,
+    RoutingListener {
     var harga: Int? = null
+    var hargamobil: Int? = null
     var pendekatan = 0
     var jaraksebenarnya = 0f
     private val sum: Int? = null
     var jarak: String? = null
+    var jarakvalue: Float? = null
     lateinit var sessionManager: SessionManager
+
     //punya pilihmaps
     lateinit var materialSearchBar: MaterialSearchBar
     private var rippleBg: RippleBackground? = null
     private var mapView: View? = null
-    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     private var placesClient: PlacesClient? = null
-    lateinit var predictionList : List<AutocompletePrediction>
-    private var mMap: GoogleMap? = null
+    lateinit var predictionList: List<AutocompletePrediction>
     var keyy: String? = null
     var nama: String? = null
     var dialog: Dialog? = null
-    private lateinit var geoQuery: GeoQuery
+    lateinit var geoQuery: GeoQuery
     private var radius: Double = 1.0
     private var driverFound = false
     var driverID: String? = null
-
-    private var locationCallback: LocationCallback? = null
+    val TAG = "IkiOjekActivity"
     private var requestBol = false
-
+    var logika = 0
+    var valueListener: ValueEventListener? = null
     private var mLastKnownLocation: Location? = null
     var logic = 0
-
+    var logikastatus = 0
     lateinit var auth: FirebaseAuth
-    var userID : String? = null
+    var userID: String? = null
+    private lateinit var mapFragment: SupportMapFragment
+    var latitude: String? = null
+    var longitude: String? = null
+    var latitudetujuan: String? = null
+    var longitudetujuan: String? = null
+    private var mFirestore: FirebaseFirestore? = null
 
-    companion object{
+    //tipekendaraan
+    //0 = motor
+    //1 = mobil
+    var tipekendaraan = 0
+
+    //======================
+    companion object {
 
 
-        var peta: GoogleMap? = null
+        private lateinit var peta: GoogleMap
         var namalokasi: String? = null
-        var namalokasitujuan : String? = null
-        val sheet = DemoBottomSheetFragment()
-        var latitude : String? = null
-        var longitude : String? = null
-        var latitudetujuan : String? = null
-        var longitudetujuan : String? = null
-        var logic : Int? = null
+        var namalokasitujuan: String? = null
+        var logic: Int? = null
         private const val DEFAULT_ZOOM = 15
         private const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1
-        var hargaongkir : Int? = null
+        var hargaongkir: Int? = null
+        var hargaongkirmobil: Int? = null
     }
+
+    lateinit var geoQueryEventListener: GeoQueryEventListener
+
+    //lokasi system
+    private lateinit var locationRequest: LocationRequest
+    private lateinit var locationCallback: LocationCallback
+    private lateinit var mFusedLocationProviderClient: FusedLocationProviderClient
+
+
+    lateinit var progressDialog: Dialog
+
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_iki_taksi)
-        val bundle: Bundle? = intent.extras
-        nama = bundle!!.getString("namacostumer")
+        progressDialog = ProgressDialog(this)
+        progressDialog.setTitle("Sedang mencari lokasi")
+        progressDialog.setCanceledOnTouchOutside(false)
 
+        progressDialog.show()
+        val bundle: Bundle? = intent.extras
+        checkMyLocationPermission()
+        init()
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+
+
+        nama = bundle!!.getString("namacostumer")
         mapview.onCreate(savedInstanceState)
-        pilihmaps.visibility = View.INVISIBLE
+        ikiae.visibility = View.INVISIBLE
         accept_order.visibility = View.INVISIBLE
         sessionManager = SessionManager(this)
-        showPermission()
+        sessionManager.setiduser("1")
         materialSearchBar = findViewById(R.id.searchBar)
         rippleBg = findViewById(R.id.ripple_bg)
 
         auth = FirebaseAuth.getInstance()
         userID = auth.currentUser!!.uid
-        val mapFragment =
-            supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment!!.getMapAsync(this)
-        mapView = mapFragment.view
-        mFusedLocationProviderClient =
-            LocationServices.getFusedLocationProviderClient(this@IkiTaksiActivity)
+
         Places.initialize(this@IkiTaksiActivity, getString(R.string.google_maps_key))
         placesClient = Places.createClient(this)
         val token = AutocompleteSessionToken.newInstance()
@@ -182,7 +227,13 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
             ) {
                 val predictionsRequest =
                     FindAutocompletePredictionsRequest.builder()
-                        .setTypeFilter(TypeFilter.ADDRESS)
+                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        .setLocationBias(
+                            RectangularBounds.newInstance(
+                                LatLng(-7.657273, 112.696534),
+                                LatLng(-7.608442, 112.769147)
+                            )
+                        )
                         .setSessionToken(token)
                         .setQuery(s.toString())
                         .build()
@@ -228,7 +279,7 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
                 Handler().postDelayed({ materialSearchBar.clearSuggestions() }, 1000)
                 val imm =
                     getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm?.hideSoftInputFromWindow(
+                imm.hideSoftInputFromWindow(
                     materialSearchBar.windowToken,
                     InputMethodManager.HIDE_IMPLICIT_ONLY
                 )
@@ -243,7 +294,7 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
                         Log.i("mytag", "Place found: " + place.name)
                         val latLngOfPlace = place.latLng
                         if (latLngOfPlace != null) {
-                            mMap!!.moveCamera(
+                            peta.moveCamera(
                                 CameraUpdateFactory.newLatLngZoom(
                                     latLngOfPlace,
                                     DEFAULT_ZOOM.toFloat()
@@ -252,7 +303,7 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
                         }
                     }.addOnFailureListener { e ->
                         if (e is ApiException) {
-                            val apiException = e as ApiException
+                            val apiException = e
                             apiException.printStackTrace()
                             val statusCode = apiException.statusCode
                             Log.i("mytag", "place not found: " + e.message)
@@ -265,11 +316,14 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
         })
 
         btn_accept.setOnClickListener(View.OnClickListener {
-            val latitude = mMap!!.cameraPosition.target.latitude
-            val longitude = mMap!!.cameraPosition.target.longitude
+            progressDialog = ProgressDialog(this)
+            progressDialog.setTitle("sedang mencari rute")
+            progressDialog.setCanceledOnTouchOutside(false)
+            val latituded = peta.cameraPosition.target.latitude
+            val longituded = peta.cameraPosition.target.longitude
             rippleBg!!.startRippleAnimation()
-            Companion.latitude = latitude.toString()
-            Companion.longitude = longitude.toString()
+            latitude = latituded.toString()
+            longitude = longituded.toString()
 
             startActivity<IkiTaksiActivity>()
             Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
@@ -277,111 +331,256 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
 
         mapview.getMapAsync { googleMap ->
             peta = googleMap
+            peta.isMyLocationEnabled = true
+            peta.uiSettings.isMyLocationButtonEnabled = true
+            peta.uiSettings.isCompassEnabled = true
+            if (latitude != null && longitude != null) {
+                peta.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            latitude!!.toDouble(),
+                            longitude!!.toDouble()
+                        ), 18f
+                    )
+                )
+                peta.uiSettings.isMyLocationButtonEnabled = true
+                peta.uiSettings.isCompassEnabled = true
+            }
 
-            googleMap.isMyLocationEnabled = true
-            googleMap.setOnMarkerDragListener(this)
+
+
+
+            Dexter.withContext(this)
+                .withPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                .withListener(object : PermissionListener {
+                    override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                        //aktifkan
+                        peta.uiSettings.isCompassEnabled = true
+                        peta.isMyLocationEnabled = true
+                        peta.uiSettings.isMyLocationButtonEnabled = true
+
+                        peta.setOnMyLocationClickListener {
+                            toast("button di klik")
+                            mFusedLocationProviderClient.lastLocation
+                                .addOnFailureListener { e ->
+                                    toast("permission ${p0!!.permissionName} + gagal ")
+                                }.addOnSuccessListener { location ->
+                                    val userLatLng = LatLng(location.latitude, location.longitude)
+                                    peta.animateCamera(
+                                        CameraUpdateFactory.newLatLngZoom(
+                                            userLatLng,
+                                            18f
+                                        )
+                                    )
+                                    peta.addMarker(
+                                        MarkerOptions().position(
+                                            LatLng(
+                                                latitude!!.toDouble(),
+                                                longitude!!.toDouble()
+                                            )
+                                        ).title("posisiku")
+                                            .icon(
+                                                BitmapDescriptorFactory.defaultMarker(
+                                                    BitmapDescriptorFactory.HUE_GREEN
+                                                )
+                                            )
+                                    )
+
+                                }
+                            true
+                        }
+
+                        //layout
+
+
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(
+                        p0: PermissionRequest?,
+                        p1: PermissionToken?
+                    ) {
+                        TODO("Not yet implemented")
+                    }
+
+                    override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                        toast("Permission ${p0!!.permissionName} + gagal")
+                    }
+                })
+
+            peta.setOnMarkerDragListener(this@IkiTaksiActivity)
 
 
 
             edt_lokasitujuan.setOnClickListener {
-                mapview.visibility = View.INVISIBLE
+                mapview.visibility = View.VISIBLE
                 layoutBottomSheet.visibility = View.INVISIBLE
                 accept_order.visibility = View.INVISIBLE
-
-                pilihmaps.visibility = View.VISIBLE
+                ikiae.visibility = View.VISIBLE
                 logic = 2
             }
 
-            edt_namalokasianda.setOnClickListener{
-                mapview.visibility = View.INVISIBLE
+            edt_namalokasianda.setOnClickListener {
+                peta.moveCamera(
+                    CameraUpdateFactory.newLatLngZoom(
+                        LatLng(
+                            latitude!!.toDouble(),
+                            longitude!!.toDouble()
+                        ), 18f
+                    )
+                )
+
+                mapview.visibility = View.VISIBLE
                 layoutBottomSheet.visibility = View.INVISIBLE
                 accept_order.visibility = View.INVISIBLE
-
-                pilihmaps.visibility = View.VISIBLE
+                ikiae.visibility = View.VISIBLE
                 logic = 1
 
             }
 
             btn_accept.setOnClickListener {
-                if (logic ==1){
+                if (logic == 1) {
                     mapview.visibility = View.VISIBLE
                     layoutBottomSheet.visibility = View.VISIBLE
                     accept_order.visibility = View.INVISIBLE
-                    pilihmaps.visibility = View.INVISIBLE
-                    val lat = mMap!!.cameraPosition.target.latitude
-                    val long = mMap!!.cameraPosition.target.longitude
+                    ikiae.visibility = View.INVISIBLE
+                    val lat = peta.cameraPosition.target.latitude
+                    val long = peta.cameraPosition.target.longitude
                     latitude = lat.toString()
                     longitude = long.toString()
                     rippleBg!!.startRippleAnimation()
                     Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
-                    if (latitudetujuan !=null && longitudetujuan !=null){
-                        peta!!.clear()
-                        showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(),"posisiku")
-                        showMainMarker(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),"posisitujuan")
+                    if (latitudetujuan != null && longitudetujuan != null) {
+                        peta.clear()
+                        showbetweenmarker(
+                            latitude!!.toDouble(), longitude!!.toDouble(),
+                            latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),
+                            "posisiku",
+                            "posisi tujuan"
+                        )
                         val nama = showName(latitude!!.toDouble(), longitude!!.toDouble())
-                        edt_namalokasianda.setText(nama)
-                        val namatujuan = showName(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
-                        edt_lokasitujuan.setText(namatujuan)
+                        edt_namalokasianda.text = nama
+                        val namatujuan =
+                            showName(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
+                        edt_lokasitujuan.text = namatujuan
                         mapview.visibility = View.VISIBLE
                         layoutBottomSheet.visibility = View.INVISIBLE
                         accept_order.visibility = View.VISIBLE
-                        pilihmaps.visibility = View.INVISIBLE
-                        route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
+                        ikiae.visibility = View.INVISIBLE
+                        Findroutes(
+                            LatLng(latitude!!.toDouble(), longitude!!.toDouble()),
+                            LatLng(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
+                        )
+//                        route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
+
+                    } else {
+                        peta.clear()
+                        showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(), "posisiku")
 
                     }
-                    else{
-                        peta!!.clear()
-                        showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(),"posisiku")
 
-                    }
-
-                }
-
-                else if (logic ==2){
-                    val lat = mMap!!.cameraPosition.target.latitude
-                    val long = mMap!!.cameraPosition.target.longitude
+                } else if (logic == 2) {
+                    val lat = peta.cameraPosition.target.latitude
+                    val long = peta.cameraPosition.target.longitude
                     latitudetujuan = lat.toString()
                     longitudetujuan = long.toString()
                     rippleBg!!.startRippleAnimation()
                     val nama = showName(latitude!!.toDouble(), longitude!!.toDouble())
-                    edt_namalokasianda.setText(nama)
-                    val namatujuan = showName(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
-                    edt_lokasitujuan.setText(namatujuan)
-                    peta!!.clear()
-                    showMainMarker(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),"posisitujuan")
-                    showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(),"posisiku")
+                    edt_namalokasianda.text = nama
+                    val namatujuan =
+                        showName(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
+                    edt_lokasitujuan.text = namatujuan
+                    peta.clear()
+                    showbetweenmarker(
+                        latitude!!.toDouble(), longitude!!.toDouble(),
+                        latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble(),
+                        "posisiku",
+                        "posoi"
+                    )
+                    showMainMarker(
+                        latitudetujuan!!.toDouble(),
+                        longitudetujuan!!.toDouble(),
+                        "posisitujuan"
+                    )
+                    showMainMarker(latitude!!.toDouble(), longitude!!.toDouble(), "posisiku")
                     Handler().postDelayed({ rippleBg!!.stopRippleAnimation() }, 3000)
                     mapview.visibility = View.VISIBLE
                     layoutBottomSheet.visibility = View.INVISIBLE
                     accept_order.visibility = View.VISIBLE
-                    pilihmaps.visibility = View.INVISIBLE
-                    route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
+                    ikiae.visibility = View.INVISIBLE
+                    Findroutes(
+                        LatLng(latitude!!.toDouble(), longitude!!.toDouble()),
+                        LatLng(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
+                    )
                 }
+
+            }
+
+            rv_mobil.setOnClickListener {
+                //mobil
+                tipekendaraan = 1
+                rv_mobil.setBackgroundColor(Color.BLUE)
+                rv_motor.setBackgroundColor(Color.WHITE)
+                peta.clear()
+                Findroutes(
+                    LatLng(latitude!!.toDouble(), longitude!!.toDouble()),
+                    LatLng(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
+                )
+            }
+
+            rv_motor.setOnClickListener {
+                //motor
+                tipekendaraan = 0
+                rv_motor.setBackgroundColor(Color.BLUE)
+                rv_mobil.setBackgroundColor(Color.WHITE)
+                peta.clear()
+                Findroutes(
+                    LatLng(latitude!!.toDouble(), longitude!!.toDouble()),
+                    LatLng(latitudetujuan!!.toDouble(), longitudetujuan!!.toDouble())
+                )
 
             }
 
             btn_jemput.setOnClickListener {
-                if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan !=null) {
-                    when (requestBol) {
-                        false -> {
-                            requestBol = true
-                            insertServer()
-
-
+                logikastatus = 1
+                val ref =
+                    FirebaseDatabase.getInstance().reference.child("Pandaan").child("Costumers")
+                        .child(userID.toString()).child("status").removeValue()
+                if (tipekendaraan == 0) {
+                    if (pendekatan < 30) {
+                        if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan != null && hargaongkir != null) {
+                            when (requestBol) {
+                                false -> {
+                                    requestBol = true
+                                    insertServer()
+                                }
+                            }
+                        } else {
+                            toast("masukan lokasi terlebih dahulu")
                         }
+                    } else {
+                        toast("Lokasi tujuan maksimal 30KM untuk OJEK")
                     }
+                } else if (tipekendaraan == 1) {
+                    if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan != null && hargaongkir != null) {
+                        when (requestBol) {
+                            false -> {
+                                requestBol = true
+                                insertServer()
+                            }
+                        }
+                    } else {
+                        toast("masukan lokasi terlebih dahulu")
 
-                } else {
-                    toast("masukan lokasi terlebih dahulu")
+                    }
                 }
 
+
             }
 
 
-            if (latitude !=null && longitude !=null && latitudetujuan !=null && longitudetujuan !=null){
+            if (latitude != null && longitude != null && latitudetujuan != null && longitudetujuan != null) {
                 route(latitude!!, longitude!!, latitudetujuan!!, longitudetujuan!!)
             }
-
 
 
         }
@@ -389,10 +588,82 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
 
     }
 
+    private fun init() {
+        locationRequest = LocationRequest()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.fastestInterval = 3000
+        locationRequest.interval = 5000
+        locationRequest.smallestDisplacement = 10f
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult?) {
+                super.onLocationResult(locationResult)
+                val newPos = LatLng(
+                    locationResult!!.lastLocation.latitude,
+                    locationResult.lastLocation.longitude
+                )
+                latitude = locationResult.lastLocation.latitude.toString()
+                longitude = locationResult.lastLocation.longitude.toString()
+
+
+
+                progressDialog.dismiss()
+
+            }
+
+        }
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        mFusedLocationProviderClient.requestLocationUpdates(
+            locationRequest, locationCallback,
+            Looper.myLooper()
+        )
+
+    }
+
+
+    fun showbetweenmarker(
+        lat: Double,
+        lng: Double,
+        lattujuan: Double,
+        lngtujuan: Double,
+        namaawal: String,
+        namatujuan: String
+    ) {
+        val marker1 =
+            LatLng(java.lang.Double.valueOf(lat), java.lang.Double.valueOf(lng))
+        val marker2 = LatLng(lattujuan, lngtujuan)
+
+        val markersList: MutableList<Marker> = ArrayList()
+        val youMarker: Marker =
+            peta.addMarker(MarkerOptions().position(marker1).title(namaawal))
+        val playerMarker: Marker =
+            peta.addMarker(MarkerOptions().position(marker2).title(namatujuan))
+
+        markersList.add(youMarker)
+        markersList.add(playerMarker)
+
+        val builder = LatLngBounds.Builder()
+        for (m in markersList) {
+            builder.include(m.position)
+        }
+        val padding = 50
+        val bounds = builder.build()
+        val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+        peta.setOnMapLoadedCallback(GoogleMap.OnMapLoadedCallback { //animate camera here
+            peta.animateCamera(cu)
+        })
+
+    }
 
 
     @SuppressLint("CheckResult")
-    private fun route(latitude : String, longitude : String, latitudedriver : String, longitudedriver : String) {
+    private fun route(
+        latitude: String,
+        longitude: String,
+        latitudedriver: String,
+        longitudedriver: String
+    ) {
         val origin = latitude.toString() + "," + longitude.toString()
         val dest = latitudedriver.toString() + "," + longitudedriver.toString()
         NetworkModule.getService()
@@ -410,7 +681,6 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
 
 
         if (routes != null) {
-            harga = 2000
 
             val point = routes.get(0)?.overviewPolyline?.points
             jarak = routes[0]?.legs?.get(0)?.distance?.text
@@ -419,39 +689,55 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
             val price = pricex.div(1000.0).times(2000.0)
             jaraksebenarnya = jarakValue.toString().toFloat() / 1000
             pendekatan = Math.round(jaraksebenarnya)
-            peta?.let {
-                point?.let { it1 ->
-                    DirectionMapsV2.gambarRoute(
-                        it,
-                        it1
-                    )
-                }
+            peta.let {
+                point?.let { it1 -> DirectionMapsV2.gambarRoute(it, it1) }
             }
+            progressDialog.dismiss()
 
-            if (pendekatan <= 1) {
-                toast("halo")
+            if (pendekatan <= 5) {
+                harga = 9000
+                hargamobil = 20000
                 txt_hargaongkir.text = "Rp. $harga"
                 txt_jarakojek.text = "Rp. $jarak"
-            } else if (pendekatan >= 1) {
-                hargaongkir = pendekatan * harga!!
+                txt_hargaongkirmobil.text = "Rp. $hargamobil"
+            } else if (pendekatan > 5) {
+                harga = 2000
+                hargamobil = 5000
+                hargaongkir = pendekatan * harga!! - 1000
+                hargaongkirmobil = pendekatan * hargamobil!! - 1000
                 txt_hargaongkir.text = "Rp. ${pendekatan * harga!!}  ($jarak)"
-                txt_jarakojek.text = "Rp. ${pendekatan* harga!!}"
+                txt_jarakojek.text = "Rp. ${pendekatan * harga!!}"
+                txt_hargaongkirmobil.text = "Rp. ${pendekatan * hargaongkir!!}"
             }
         }
     }
 
     private fun insertServer() {
         val currentTime = Calendar.getInstance().time
-        insertRequest(
-            currentTime.toString(),
-            userID.toString(),
-            latitude!!.toDouble(),
-            longitude!!.toDouble(),
-            latitudetujuan!!.toDouble(),
-            longitudetujuan!!.toDouble(),
-            jarak.toString(),
-            hargaongkir.toString()
-        )
+        if (tipekendaraan == 0) {
+            insertRequest(
+                currentTime.toString(),
+                userID.toString(),
+                latitude!!.toDouble(),
+                longitude!!.toDouble(),
+                latitudetujuan!!.toDouble(),
+                longitudetujuan!!.toDouble(),
+                jarak.toString(),
+                hargaongkir.toString()
+            )
+        } else if (tipekendaraan == 1) {
+            insertRequest(
+                currentTime.toString(),
+                userID.toString(),
+                latitude!!.toDouble(),
+                longitude!!.toDouble(),
+                latitudetujuan!!.toDouble(),
+                longitudetujuan!!.toDouble(),
+                jarak.toString(),
+                hargamobil.toString()
+            )
+
+        }
     }
 
     fun insertRequest(
@@ -477,25 +763,54 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
 
 
         val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference(Constan.tb_BookingOjek)
-        keyy = database.reference.push().key
-        myRef.child(userID.toString()).child("latitudeTujuan").setValue(latTujuan.toString())
-        myRef.child(userID.toString()).child("longitudeTujuan").setValue(lonTujuan.toString())
-        myRef.child(userID.toString()).child("penumpang").setValue(nama.toString())
-        myRef.child(userID.toString()).child("latitudePenumpang").setValue(latAwal.toString())
-        myRef.child(userID.toString()).child("longitudePenumpang").setValue(lonAwal.toString())
-        myRef.child(userID.toString()).child("harga").setValue(harga)
-        myRef.child(userID.toString()).child("notelpon").setValue("082232469415")
-        myRef.child(userID.toString()).child("alamat").setValue(showName(latTujuan!!,lonTujuan!!))
+        if (tipekendaraan == 0) {
+            val myRef = database.getReference(Constan.tb_BookingOjek)
+            keyy = database.reference.push().key
+            myRef.child(userID.toString()).child("latitudeTujuan").setValue(latTujuan.toString())
+            myRef.child(userID.toString()).child("longitudeTujuan").setValue(lonTujuan.toString())
+            myRef.child(userID.toString()).child("penumpang").setValue(nama.toString())
+            myRef.child(userID.toString()).child("latitudePenumpang").setValue(latAwal.toString())
+            myRef.child(userID.toString()).child("longitudePenumpang").setValue(lonAwal.toString())
+            myRef.child(userID.toString()).child("harga").setValue(harga)
+            myRef.child(userID.toString()).child("notelpon")
+                .setValue(sessionManager.gettelefon().toString())
+            myRef.child(userID.toString()).child("jarak")
+                .setValue("${jaraksebenarnya.toString()} KM")
+            myRef.child(userID.toString()).child("alamat")
+                .setValue(showName(latTujuan!!, lonTujuan!!))
+            myRef.child(userID.toString()).child("area").setValue(showArea(latTujuan, lonTujuan))
+
+            showDialog(true)
+
+            mencaridriverterdekat()
+
+        } else if (tipekendaraan == 1) {
+            val myRef = database.getReference(Constan.tb_BookingTaksi)
+            keyy = database.reference.push().key
+            myRef.child(userID.toString()).child("latitudeTujuan").setValue(latTujuan.toString())
+            myRef.child(userID.toString()).child("longitudeTujuan").setValue(lonTujuan.toString())
+            myRef.child(userID.toString()).child("penumpang").setValue(nama.toString())
+            myRef.child(userID.toString()).child("latitudePenumpang").setValue(latAwal.toString())
+            myRef.child(userID.toString()).child("longitudePenumpang").setValue(lonAwal.toString())
+            myRef.child(userID.toString()).child("harga").setValue(harga)
+            myRef.child(userID.toString()).child("notelpon")
+                .setValue(sessionManager.gettelefon().toString())
+            myRef.child(userID.toString()).child("jarak")
+                .setValue("${jaraksebenarnya.toString()} KM")
+            myRef.child(userID.toString()).child("alamat")
+                .setValue(showName(latTujuan!!, lonTujuan!!))
+            myRef.child(userID.toString()).child("area").setValue(showArea(latTujuan, lonTujuan))
 
 
-        showDialog(true)
-        mencaridriverterdekat()
+            showDialog(true)
+
+            mencaridriverterdekat()
+
+        }
+
 
 /*
-
         val hei = keyy
-
         hei?.let { bookingHistoryUser(it) }
         myRef.child(keyy ?: "").setValue(booking)
 */
@@ -507,10 +822,8 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
     private fun showDialog(status: Boolean) {
         dialog = Dialog(this)
         dialog?.setContentView(R.layout.tunggudriver)
-
+        dialog?.setCanceledOnTouchOutside(false)
         if (status) {
-
-
             dialog?.show()
 
         } else dialog?.dismiss()
@@ -518,15 +831,60 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
 
     }
 
-    private fun mencaridriverterdekat() {
-        val posisiDriver =
-            FirebaseDatabase.getInstance().reference.child("Driver").child("DriverTersedia")
-        val geoFire = GeoFire(posisiDriver)
-        geoQuery = geoFire.queryAtLocation(GeoLocation(latitude!!.toDouble(), longitude!!.toDouble()), radius)
-        geoQuery.removeAllListeners()
-        geoQuery.addGeoQueryEventListener(object : GeoQueryEventListener {
+    var data = ""
+    var alfan: String? = null
+    val booking = FirebaseDatabase.getInstance().reference.child("BookingOjek")
+    val kode = kodeorder()
+    val listener = object : ValueEventListener {
+        override fun onCancelled(p0: DatabaseError) {
+            TODO("Not yet implemented")
+        }
+
+        override fun onDataChange(p0: DataSnapshot) {
+            val data = p0.child(userID.toString()).child("status").value.toString()
+            if (data.equals(driverID.toString())) {
+                showDialog(false)
+                peta.clear()
+
+                val usermap: HashMap<String, Any?> = HashMap()
+                usermap["status"] = "ojek"
+                usermap["kodeorder"] = kode
+                usermap["uidku"] = userID.toString()
+                usermap["uiddriver"] = driverID.toString()
+                usermap["latitudePenumpang"] = latitude.toString()
+                usermap["longitudePenumpang"] = longitude.toString()
+                usermap["latitudeTujuan"] = latitudetujuan.toString()
+                usermap["longitudeTujuan"] = longitudetujuan.toString()
+                if (logika == 0) {
+                    val ref =
+                        FirebaseDatabase.getInstance().getReference("DaftarBooking")
+                            .child(userID.toString()).child(kode).setValue(usermap)
+                    logika = 1
+                }
+                toast(radius.toString())
+                sessionManager.setiduser("2")
+                startActivity<TrackingOrderOjekActivity>(
+                    "kunci" to driverID,
+                    "latitudeawal" to latitude.toString(),
+                    "longitudeawal" to longitude.toString(),
+                    "latitudetujuan" to latitudetujuan.toString(),
+                    "longitudetujuan" to longitudetujuan.toString(),
+                    "kode" to kode,
+                    "harga" to hargaongkir.toString()
+                )
+
+                finish()
+
+
+            }
+        }
+
+    }
+
+    private fun geo() {
+        geoQueryEventListener = object : GeoQueryEventListener {
             override fun onGeoQueryReady() {
-                if (!driverFound) {
+                if (!driverFound && radius < 8.0) {
                     radius++
                     Log.d("here", "here")
                     mencaridriverterdekat()
@@ -537,115 +895,194 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
                 if (!driverFound && requestBol) {
                     driverFound = true
                     driverID = key!!
-
-                    val db: DatabaseReference = FirebaseDatabase.getInstance().getReference("Pandaan")
-                    db.child("Akun_Driver").child(driverID.toString()).child("statusOjek").setValue(userID)
-
-                    val booking: DatabaseReference = FirebaseDatabase.getInstance().getReference("BookingOjek")
-                    booking.addValueEventListener(object : ValueEventListener {
-                        override fun onCancelled(p0: DatabaseError) {
-                            TODO("Not yet implemented")
-                        }
-
-                        override fun onDataChange(p0: DataSnapshot) {
-                            val data = p0.child(userID.toString()).child("status").value.toString()
-                            if (data.equals(driverID.toString())){
-                                showDialog(false)
-                                startActivity<TrackingOrderTaksiActivity>(   "kunci" to driverID,
-                                    "latitudeawal" to latitude.toString(),
-                                    "longitudeawal" to longitude.toString(),
-                                    "latitudetujuan" to latitudetujuan.toString(),
-                                    "longitudetujuan" to longitudetujuan.toString())
+                    //hapus driverTersedia
+                    if (sessionManager.getiduser().equals("1")) {
+                        if (tipekendaraan == 0) {
+                            val hapusdriverTersedia: DatabaseReference =
+                                FirebaseDatabase.getInstance().reference
+                            hapusdriverTersedia.child("Driver").child("DriverTersedia")
+                                .child(driverID.toString()).removeValue()
+                            if (driverID != null) {
+                                ams()
+                                kirimpesan("IKIJEK", "ada orderan siap siap yaa")
+                            } else {
+                                ams()
+                                kirimpesan("IKIJEK", "ada orderan siap siap yaa")
                             }
+                            if (logikastatus == 1) {
+                                val db: DatabaseReference =
+                                    FirebaseDatabase.getInstance().getReference("Pandaan")
+                                db.child("Akun_Driver").child(driverID.toString())
+                                    .child("statusOjek").setValue(userID)
+                                db.child("Akun_Driver").child(driverID.toString())
+                                    .child("kodeorder").setValue(kode)
+                            }
+
+                            booking.addValueEventListener(listener)
+                        } else if (tipekendaraan == 1) {
+                            val hapusdriverTersedia: DatabaseReference =
+                                FirebaseDatabase.getInstance().reference
+                            hapusdriverTersedia.child("Driver").child("TaksiTersedia")
+                                .child(driverID.toString()).removeValue()
+                            if (driverID != null) {
+                                ams()
+                                kirimpesan("IKITAKSI", "ada orderan siap siap yaa")
+                            } else {
+                                ams()
+                                kirimpesan("IKITAKSI", "ada orderan siap siap yaa")
+                            }
+                            if (logikastatus == 1) {
+                                val db: DatabaseReference =
+                                    FirebaseDatabase.getInstance().getReference("Pandaan")
+                                db.child("Akun_Taksi").child(driverID.toString())
+                                    .child("statusTaksi").setValue(userID)
+                                db.child("Akun_Taksi").child(driverID.toString()).child("kodeorder")
+                                    .setValue(kode)
+                            }
+
+                            booking.addValueEventListener(listener)
                         }
 
-                    })
+                    }
+
 
                 }
             }
 
             override fun onKeyMoved(key: String?, location: GeoLocation?) {
+                geoQuery.removeAllListeners()
             }
 
             override fun onKeyExited(key: String?) {
+                geoQuery.removeAllListeners()
             }
 
             override fun onGeoQueryError(error: DatabaseError?) {
+                geoQuery.removeAllListeners()
             }
 
-        })
 
+        }
 
     }
 
-
-
-    fun takeLocation(status: Int) {
-
-        try {
-            this.let { Places.initialize(it, "AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE") }
-            val fields = arrayListOf(
-                Place.Field.ID, Place.Field.NAME,
-                Place.Field.LAT_LNG, Place.Field.ADDRESS
+    private fun mencaridriverterdekat() {
+        if (tipekendaraan == 0) {
+            val posisiDriver =
+                FirebaseDatabase.getInstance().reference.child("Driver").child("DriverTersedia")
+            val geoFire = GeoFire(posisiDriver)
+            geoQuery = geoFire.queryAtLocation(
+                GeoLocation(latitude!!.toDouble(), longitude!!.toDouble()),
+                radius
             )
-            val intent = this.let {
-                Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN, fields)
-                    .build(it)
-            }
-            startActivityForResult(intent, status)
-        } catch (e: GooglePlayServicesRepairableException) {
-            // TODO: Handle the error.
-        } catch (e: GooglePlayServicesNotAvailableException) {
-            // TODO: Handle the error.
+            geo()
+            geoQuery.removeAllListeners()
+            geoQuery.addGeoQueryEventListener(geoQueryEventListener)
+        } else if (tipekendaraan == 1) {
+            val posisiDriver =
+                FirebaseDatabase.getInstance().reference.child("Driver").child("TaksiTersedia")
+            val geoFire = GeoFire(posisiDriver)
+            geoQuery = geoFire.queryAtLocation(
+                GeoLocation(latitude!!.toDouble(), longitude!!.toDouble()),
+                radius
+            )
+            geo()
+            geoQuery.removeAllListeners()
+            geoQuery.addGeoQueryEventListener(geoQueryEventListener)
         }
 
+
     }
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun showPermission() {
-        showGps()
-        if (this.let {
-                ContextCompat.checkSelfPermission(
-                    it,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            } != PackageManager.PERMISSION_GRANTED) {
 
-            if (this.let {
-                    ActivityCompat.shouldShowRequestPermissionRationale(
-                        it,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
-                    )
-                }) {
+    fun kodeorder(): String {
+        val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+        val outputStrLength = (20..36).shuffled().first()
 
+        return (1..outputStrLength)
+            .map { kotlin.random.Random.nextInt(0, charPool.size) }
+            .map(charPool::get)
+            .joinToString("")
+    }
 
-                showGps()
-            } else {
-                requestPermissions(
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    ), 1
-                )
+    private fun ams() {
+        val tokendriver = FirebaseDatabase.getInstance().getReference("Driver")
+        tokendriver.child("DriverTersedia")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
+                }
 
+                override fun onDataChange(p0: DataSnapshot) {
+                    data = p0.child(driverID.toString()).child("token").value.toString()
+                    alfan = data
+                    kirimpesan("IKIJEK", "ada orderan siap siap yaa")
+                }
 
+            })
+    }
+
+    fun kirimpesan(judul: String, pesan: String) {
+        val recipientToken = "$data"
+        if (judul.isNotEmpty() && pesan.isNotEmpty() && recipientToken.isNotEmpty()) {
+            PushNotifikasi(
+                NotifikasiData(judul, pesan),
+                recipientToken
+            ).also {
+                sendNotification(it)
+            }
+        }
+    }
+
+    private fun sendNotification(notification: PushNotifikasi) =
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitInstance.api.postNotification(notification)
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Response: ${Gson().toJson(response)}")
+                } else {
+                    Log.e(TAG, response.errorBody().toString())
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, e.toString())
             }
         }
 
+    private fun checkMyLocationPermission() {
+        Dexter.withActivity(this)
+            .withPermissions(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport?) {
+                    when {
+                        report!!.areAllPermissionsGranted() -> {
+                            init()
+                        }
+                        report.isAnyPermissionPermanentlyDenied -> {
+                            Log.d("PERMISSIONCHECK", "ANY PERMISSION PERMANENTLY DENIED")
+                        }
+                        else -> {
+                            checkMyLocationPermission()
+                            Log.d("PERMISSIONCHECK", "ANY PERMISSION DENIED")
+                        }
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: MutableList<PermissionRequest>?,
+                    token: PermissionToken?
+                ) {
+                    /** This will display a dialog if you need to allow permissions
+                     *
+                     * */
+                    checkMyLocationPermission()
+                    Log.d("PERMISSIONCHECK", "onPermissionRationaleShouldBeShown")
+                    token?.continuePermissionRequest()
+                }
+
+            })
+            .check()
     }
-
-    private fun showGps() {
-
-        val gps = GPSTracker(this)
-        if (gps.canGetLocation()) {
-            latitude = gps.latitude.toString()
-            longitude = gps.longitude.toString()
-            edt_namalokasianda.setText(namalokasi)
-
-        } else gps.showSettingGps()
-
-
-    }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -669,6 +1106,22 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
         }
     }
 
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val hapus =
+            FirebaseDatabase.getInstance().reference.child("BookingOjek").child(userID.toString())
+                .removeValue()
+        startActivity<HomeActivity>()
+        if (logikastatus == 1) {
+            geoQuery.removeAllListeners()
+            logikastatus = 0
+        }
+        sessionManager.setiduser("2")
+
+
+    }
+
     override fun onResume() {
         super.onResume()
         mapview?.onResume()
@@ -690,6 +1143,14 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
     }
 
     override fun onDestroy() {
+//        mFusedLocationProviderClient.removeLocationUpdates(locationCallback)
+        if (logikastatus == 1) {
+            geoQuery.removeAllListeners()
+            logikastatus = 0
+
+        }
+        sessionManager.setiduser("2")
+        booking.removeEventListener(listener)
         mapview?.onDestroy()
         super.onDestroy()
     }
@@ -698,7 +1159,6 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
         super.onLowMemory()
         mapview?.onLowMemory()
     }
-
 
 
     fun showName(lat: Double, lon: Double): String {
@@ -726,36 +1186,139 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
         return name
     }
 
+    fun showArea(lat: Double, lon: Double): String {
+
+        var name = ""
+        val geocoder = Geocoder(this, Locale.getDefault())
+        try {
+            val addresses = geocoder.getFromLocation(lat, lon, 1)
+
+            if (addresses.size > 0) {
+                val fetchedAddress = addresses.get(0)
+                val strAddress = StringBuilder()
+
+                for (i in 0..fetchedAddress.maxAddressLineIndex) {
+                    name = fetchedAddress.locality
+                }
+
+            }
+
+        } catch (e: Exception) {
+
+        }
+        return name
+    }
+
     fun showMainMarker(lat: Double, lon: Double, msg: String) {
 
         val coordinate = LatLng(lat, lon)
-        peta?.addMarker(
+        peta.addMarker(
             MarkerOptions().position(coordinate).title(msg)
-                .icon(BitmapDescriptorFactory.defaultMarker())
-                .draggable(true)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
         )
-        val cameraPosition =
-            CameraPosition.Builder().target(LatLng(lat, lon)).zoom(17f).build()
-        peta?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
-    fun showTujuanMarker(lat: Double, lon: Double, msg: String) {
 
-        val coordinate = LatLng(lat, lon)
-        peta?.addMarker(
-            MarkerOptions().position(coordinate).title(msg)
-                .icon(BitmapDescriptorFactory.defaultMarker())
-                .draggable(true)
-        )
-        val cameraPosition =
-            CameraPosition.Builder().target(LatLng(lat, lon)).zoom(17f).build()
-        peta?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+    fun Findroutes(Start: LatLng?, End: LatLng?) {
+        if (Start == null || End == null) {
+            toast("tidak dapat mendapatkan aplikasi")
+        } else {
+            if (tipekendaraan == 0) {
+                val routing: Routing = Routing.Builder()
+                    .travelMode(AbstractRouting.TravelMode.WALKING)
+                    .avoid(AbstractRouting.AvoidKind.TOLLS)
+                    .withListener(this)
+                    .alternativeRoutes(true)
+                    .waypoints(Start, End)
+                    .key("AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE") //also define your api key here.
+                    .build()
+                routing.execute()
+            } else if (tipekendaraan == 1) {
+                val routing: Routing = Routing.Builder()
+                    .travelMode(AbstractRouting.TravelMode.DRIVING)
+                    .withListener(this)
+                    .alternativeRoutes(true)
+                    .waypoints(Start, End)
+                    .key("AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE") //also define your api key here.
+                    .build()
+                routing.execute()
+
+            }
+
+        }
     }
+
+    override fun onRoutingCancelled() {
+        Findroutes(start, end)
+    }
+
+    override fun onRoutingStart() {
+        toast("mencari route")
+    }
+
+    override fun onRoutingFailure(p0: RouteException?) {
+        val parentLayout = findViewById<View>(android.R.id.content)
+        val snackbar: Snackbar = Snackbar.make(parentLayout, p0.toString(), Snackbar.LENGTH_LONG)
+        snackbar.show()
+//    Findroutes(start,end);
+    }
+
+    protected var start: LatLng? = null
+    protected var end: LatLng? = null
+
+    //polyline object
+    private var polylines: List<Polyline>? = null
+
+    override fun onRoutingSuccess(routes: ArrayList<Route>?, shortestRouteIndex: Int) {
+        val center = CameraUpdateFactory.newLatLng(start)
+        val zoom = CameraUpdateFactory.zoomTo(16F)
+
+        val polyOptions = PolylineOptions()
+        var polylineStartLatLng: LatLng? = null
+        var polylineEndLatLng: LatLng? = null
+        polylines = ArrayList()
+        for (i in 0 until routes!!.size) {
+            if (i == shortestRouteIndex) {
+                polyOptions.color(Color.GREEN)
+                polyOptions.width(10F)
+                polyOptions.addAll(routes.get(shortestRouteIndex).points)
+                val polyline = peta.addPolyline(polyOptions)
+                polylineStartLatLng = polyline.points.get(0)
+                val k = polyline.points.size
+                polylineEndLatLng = polyline.points.get(k - 1)
+                (polylines as ArrayList<Polyline>).add(polyline)
+                jaraksebenarnya = routes.get(i).distanceValue.toString().toFloat() / 1000
+                pendekatan = Math.round(jaraksebenarnya)
+
+                txt_jarakojek.text = routes.get(i).distanceText.toString()
+                if (pendekatan <= 5) {
+                    hargaongkir = 9000
+                    hargamobil = 20000
+                    toast(jaraksebenarnya.toString())
+                    txt_hargaongkir.text = "Rp. $hargaongkir"
+                    txt_hargaongkirmobil.text = "Rp. $hargamobil"
+
+
+                } else if (pendekatan > 5) {
+                    val hargamobilpunya = 5000
+                    harga = 2000
+                    hargaongkir = pendekatan * harga!! - 1000
+                    hargamobil = pendekatan * hargamobilpunya - 1000
+                    txt_hargaongkir.text = "Rp. ${hargaongkir}"
+                    txt_hargaongkirmobil.text = "Rp. $hargamobil"
+
+                }
+            } else {
+            }
+        }
+
+    }
+
 
     override fun onMarkerDragEnd(p0: Marker?) {
         val latitude = p0!!.position.latitude
         val longitude = p0.position.longitude
-        namalokasi = showName(latitude,longitude)
-        edt_namalokasianda.setText(namalokasi)
+        namalokasi = showName(latitude, longitude)
+        edt_namalokasianda.text = namalokasi
     }
 
     override fun onMarkerDragStart(p0: Marker?) {
@@ -767,175 +1330,5 @@ class IkiTaksiActivity : AppCompatActivity(),GoogleMap.OnMarkerDragListener,Anko
     }
 
 
-    override fun onMapReady(googleMap: GoogleMap?) {
-        mMap = googleMap
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        mMap!!.isMyLocationEnabled = true
-        mMap!!.uiSettings.isMyLocationButtonEnabled = true
-
-        if (mapView != null && mapView!!.findViewById<View?>("1".toInt()) != null) {
-            val locationButton =
-                (mapView!!.findViewById<View>("1".toInt())
-                    .parent as View).findViewById<View>("2".toInt())
-            val layoutParams =
-                locationButton.layoutParams as RelativeLayout.LayoutParams
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0)
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
-            layoutParams.setMargins(0, 0, 40, 180)
-        }
-
-        //check if gps is enabled or not and then request user to enable it
-
-        //check if gps is enabled or not and then request user to enable it
-        val locationRequest = LocationRequest.create()
-        locationRequest.interval = 10000
-        locationRequest.fastestInterval = 5000
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
-        val builder =
-            LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-
-        val settingsClient = LocationServices.getSettingsClient(this@IkiTaksiActivity)
-        val task =
-            settingsClient.checkLocationSettings(builder.build())
-
-        task.addOnSuccessListener(
-            this@IkiTaksiActivity,
-            OnSuccessListener<LocationSettingsResponse?> { getDeviceLocation() })
-
-        task.addOnFailureListener(this@IkiTaksiActivity,
-            OnFailureListener { e ->
-                if (e is ResolvableApiException) {
-                    try {
-                        e.startResolutionForResult(this@IkiTaksiActivity, 51)
-                    } catch (e1: IntentSender.SendIntentException) {
-                        e1.printStackTrace()
-                    }
-                }
-            })
-
-        mMap!!.setOnMyLocationButtonClickListener {
-            if (materialSearchBar.isSuggestionsVisible) materialSearchBar.clearSuggestions()
-            if (materialSearchBar.isSearchEnabled) materialSearchBar.disableSearch()
-            false
-        }
-        getDeviceLocation()
-
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun getDeviceLocation() {
-        mFusedLocationProviderClient!!.lastLocation
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    mLastKnownLocation = task.result
-                    if (mLastKnownLocation != null) {
-                        mMap!!.moveCamera(
-                            CameraUpdateFactory.newLatLngZoom(
-                                LatLng(
-                                    mLastKnownLocation!!.getLatitude(),
-                                    mLastKnownLocation!!.getLongitude()
-                                ), DEFAULT_ZOOM.toFloat()
-                            )
-                        )
-                    } else {
-                        val locationRequest = LocationRequest.create()
-                        locationRequest.interval = 10000
-                        locationRequest.fastestInterval = 5000
-                        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-                        locationCallback =
-                            object : LocationCallback() {
-                                override fun onLocationResult(locationResult: LocationResult) {
-                                    super.onLocationResult(locationResult)
-                                    if (locationResult == null) {
-                                        return
-                                    }
-                                    mLastKnownLocation = locationResult.lastLocation
-                                    mMap!!.moveCamera(
-                                        CameraUpdateFactory.newLatLngZoom(
-                                            LatLng(
-                                                mLastKnownLocation!!.getLatitude(),
-                                                mLastKnownLocation!!.getLongitude()
-                                            ), DEFAULT_ZOOM.toFloat()
-                                        )
-                                    )
-                                    mFusedLocationProviderClient!!.removeLocationUpdates(
-                                        locationCallback
-                                    )
-                                }
-                            }
-                        mFusedLocationProviderClient!!.requestLocationUpdates(
-                            locationRequest,
-                            locationCallback,
-                            null
-                        )
-                    }
-                } else {
-                    Toast.makeText(
-                        this@IkiTaksiActivity,
-                        "unable to get last location",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-    }
-
-
 }
-
-class DemoBottomSheetFragment : SuperBottomSheetFragment() {
-    lateinit var edtTujuan : EditText
-    lateinit var edtAwal : EditText
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        val root =  inflater.inflate(R.layout.fragment_bottom_sheet, container, false)
-
-        return root
-
-    }
-
-
-    override fun getCornerRadius() = context!!.resources.getDimension(R.dimen.demo_sheet_rounded_corner)
-
-    override fun getStatusBarColor() = Color.RED
-
-    override fun isSheetAlwaysExpanded(): Boolean = true
-}
-
-class BottomAccept : SuperBottomSheetFragment() {
-    lateinit var edtTujuan : EditText
-    lateinit var edtAwal : EditText
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        val root =  inflater.inflate(R.layout.accept_order, container, false)
-
-        return root
-
-    }
-
-
-    override fun getCornerRadius() = context!!.resources.getDimension(R.dimen.demo_sheet_rounded_corner)
-
-    override fun getStatusBarColor() = Color.RED
-
-    override fun getPeekHeight(): Int = 200
-}
-
-
 

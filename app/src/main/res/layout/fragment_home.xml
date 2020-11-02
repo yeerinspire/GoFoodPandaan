@@ -7,29 +7,51 @@
     tools:context=".UiaplikasiIKI.HomeFragment">
 
 
+    <com.mancj.materialsearchbar.MaterialSearchBar
+        android:id="@+id/materialSearchBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:mt_navIconEnabled="true"
+        app:mt_placeholder="Mau makan dimana ?"
+        style="@style/MaterialSearchBarLight"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+    <ImageView
+        android:id="@+id/imageView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ayam"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialSearchBar" />
+
     <ImageView
         android:id="@+id/btn_ikitaksi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="56dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_ikiojek"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.82"
+        app:layout_constraintStart_toEndOf="@+id/btn_ikiojek"
+        app:layout_constraintTop_toBottomOf="@+id/imageView12"
         app:srcCompat="@drawable/taksi" />
 
     <ImageView
         android:id="@+id/btn_ikiwarung"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginLeft="28dp"
-        android:layout_marginTop="112dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toStartOf="@+id/btn_ikitaksi"
+        app:layout_constraintHorizontal_bias="0.55"
         app:layout_constraintStart_toEndOf="@+id/btn_ikiojek"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:srcCompat="@drawable/warungbaru" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView12"
+        app:srcCompat="@drawable/warung" />
 
     <ImageView
         android:id="@+id/imageView3"
@@ -45,11 +67,11 @@
         android:id="@+id/btn_ikiojek"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.11"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/imageView12"
         app:srcCompat="@drawable/ojek" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

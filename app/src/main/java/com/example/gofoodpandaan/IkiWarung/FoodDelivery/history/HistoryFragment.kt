@@ -30,71 +30,10 @@ class HistoryFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
          root =  inflater.inflate(R.layout.fragment_history, container, false)
-        auth = FirebaseAuth.getInstance()
-        userID = auth.currentUser!!.uid
 
-        foodpopular(root)
+
+
         return  root
-    }
-
-    private fun foodpopular(root : View) {
-        recyclerView = root.find(R.id.rv_history)
-        val LayoutManager = LinearLayoutManager(context!!.applicationContext)
-        LayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        recyclerView.layoutManager = LayoutManager
-        refinfo = FirebaseDatabase.getInstance().reference.child("Pandaan").child("Resto")
-        val option =
-            FirebaseRecyclerOptions.Builder<ModelUsers>().setQuery(refinfo, ModelUsers::class.java)
-                .build()
-
-        val firebaseRecyclerAdapter =
-            object : FirebaseRecyclerAdapter<ModelUsers, MyViewHolder>(option) {
-                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-                    val itemView = LayoutInflater.from(context!!.applicationContext)
-                        .inflate(R.layout.list_item, parent, false)
-                    return MyViewHolder(
-                        itemView
-                    )
-                }
-
-                override fun onBindViewHolder(
-                    holder: MyViewHolder,
-                    position: Int,
-                    model: ModelUsers
-                ) {
-                    val refid = getRef(position).key.toString()
-                    refinfo.child(refid).addValueEventListener(object : ValueEventListener {
-                        override fun onCancelled(p0: DatabaseError) {
-
-                        }
-
-                        override fun onDataChange(p0: DataSnapshot) {
-                            holder.mname.setText(model.nama)
-                            holder.mharga.setText(model.harga)
-                            holder.itemView.setOnClickListener {
-                                startActivity<DetailFoodActivity>(
-                                    "Firebase_gambarMakanan" to model.gambar,
-                                    "Firebase_Makanan" to model.nama,
-                                    "firebase_idMakanan" to model.id,
-                                    "firebase_hargaMakanan" to model.harga,
-                                    "firebase_penjual" to model.penjual)
-
-                            }
-                        }
-
-                    })
-                }
-            }
-
-
-        recyclerView.adapter = firebaseRecyclerAdapter
-        firebaseRecyclerAdapter.startListening()
-
-    }
-
-    class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var mharga: TextView = itemView.findViewById(R.id.txt_itemhargahistory)
-        var mname: TextView = itemView.findViewById(R.id.name)
     }
 
 

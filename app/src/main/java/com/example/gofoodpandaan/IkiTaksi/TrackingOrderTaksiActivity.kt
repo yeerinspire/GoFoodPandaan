@@ -1,14 +1,23 @@
 package com.example.gofoodpandaan.IkiTaksi
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.alfanshter.udinlelangfix.Session.SessionManager
+import com.directions.route.*
 import com.example.gofoodpandaan.DirectionMapsV2
 import com.example.gofoodpandaan.HomeActivity
 import com.example.gofoodpandaan.Model.DataDriver
@@ -22,19 +31,17 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.GoogleMap.OnMapLoadedCallback
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.activity_tracking_order_taksi.*
+
+import kotlinx.android.synthetic.main.activity_tracking_order_taksi.maporder
 import kotlinx.android.synthetic.main.sheet_orderan.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.info
-import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.*
 import java.util.*
 
-class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
+class TrackingOrderTaksiActivity : AppCompatActivity(), RoutingListener, AnkoLogger {
     var peta: GoogleMap? = null
     private lateinit var database: DatabaseReference
 
@@ -48,6 +55,8 @@ class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
     var uiddriver: String? = null
     var driverMarker: Marker? = null
     var gambar: String? = null
+    var kode: String? = null
+    var harga: String? = null
 
     var nama: String? = null
     var foto: String? = null
@@ -59,47 +68,44 @@ class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
     lateinit var auth: FirebaseAuth
     var UserID: String? = null
 
+    lateinit var sessionManager: SessionManager
 
-    fun ambildatanyadriver() {
-        val ref = FirebaseDatabase.getInstance().getReference("Pandaan").child("Akun_Driver")
-        ref.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {
+    lateinit var refdatanyadriver : DatabaseReference
+    lateinit var listenerdatanyadriver : ValueEventListener
+    lateinit var refdatadriver : DatabaseReference
+    lateinit var listenerdatadriver : ValueEventListener
+    lateinit var refNotif : DatabaseReference
+    lateinit var listenerNotif : ValueEventListener
+    lateinit var refSelesai : DatabaseReference
+    lateinit var listenerSelesai : ValueEventListener
+    val REQUEST_PHONE_CALL = 1
+    lateinit var refdatabookingOjek : DatabaseReference
+    lateinit var listenerrefdatabookingOjek : ValueEventListener
 
-            }
 
-            override fun onDataChange(p0: DataSnapshot) {
-                val data = p0.child(kunci.toString()).getValue(DataDriver::class.java)
-                nama = data!!.nama.toString()
-                foto = data.foto.toString()
-                motor = data.motor.toString()
-                platnomor = data.platnomor.toString()
-                txt_namadriver.text = nama.toString()
-                txt_namamotor.text = motor.toString()
-                txt_noplat.text = platnomor.toString()
-                Picasso.get().load(foto.toString()).resize(100, 100).into(imageview)
-
-            }
-
-        })
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tracking_order_taksi)
         imageview = findViewById(R.id.img_fotodriver)
         progressdialog = ProgressDialog(this)
+        sessionManager = SessionManager(this)
         val bundle: Bundle? = intent.extras
         kunci = bundle!!.getString("kunci")
         latawal = bundle.getString("latitudeawal")
         lngawal = bundle.getString("longitudeawal")
         lattujuan = bundle.getString("latitudetujuan")
         lngtujuan = bundle.getString("longitudetujuan")
+        kode = bundle.getString("kode")
+        harga = bundle.getString("harga")
         auth = FirebaseAuth.getInstance()
         UserID = auth.currentUser!!.uid
         maporder.onCreate(savedInstanceState)
         maporder.getMapAsync { googleMap ->
             peta = googleMap
-            showMainMarker(latawal.toString().toDouble(), lngawal.toString().toDouble(), "posisiku")
+            peta!!.isMyLocationEnabled = true
+            peta!!.uiSettings.isMyLocationButtonEnabled = true
+            peta!!.uiSettings.isCompassEnabled = true
             showTujuanMarker(
                 lattujuan.toString().toDouble(),
                 lngtujuan.toString().toDouble(),
@@ -113,136 +119,269 @@ class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
                 "posisiku",
                 "posoi"
             )
-            route(latawal!!, lngawal!!, lattujuan!!, lngtujuan!!)
+            Findroutes(
+                LatLng(
+                    latawal!!.toDouble(),
+                    lngawal!!.toDouble()
+                ), LatLng(
+                    lattujuan!!.toDouble(),
+                    lngtujuan!!.toDouble()
+                )
+            )
             ambildatanyadriver()
             ambildatadriver()
-            btn_chatojek.setOnClickListener {
-                progressdialog.setTitle("sedang menghubungkan")
-                progressdialog.show()
-                if (nama != null && platnomor != null) {
-                    startActivity<chatActivity>(
-                        "nama_driver" to kunci,
-                        "uid_driver" to kunci,
-                        "platdriver" to platnomor)
-                    progressdialog.dismiss()
-                }
-            }
+            ambildataBookingOjek()
         }
 
+        txt_tunai.text = harga.toString()
+        gambarnotif()
+        btn_chatojek.setOnClickListener {
+            progressdialog.setTitle("sedang menghubungkan")
+            progressdialog.show()
+            progressdialog.dismiss()
+            startActivity<chatActivity>("uid_driver" to kunci,"nama_driver" to nama,"platdriver" to platnomor)
+        }
 
-    }
-
-    private fun ambildatadriver() {
-        val auth = FirebaseAuth.getInstance()
-        val userID = auth.currentUser!!.uid
-        val database2 =
-            FirebaseDatabase.getInstance().getReference("BookingOjek").child(userID.toString())
-        database = FirebaseDatabase.getInstance().getReference("Driver")
-        database.child("DriverSibuk").child(kunci.toString())
-            .addValueEventListener(object : ValueEventListener {
+        btn_cancel.setOnClickListener {
+            progressdialog.setTitle("Tunggu sebentar")
+            progressdialog.show()
+            progressdialog.setCanceledOnTouchOutside(false)
+            val ambiluiddriver = FirebaseDatabase.getInstance().reference.child("BookingOjek")
+                .child(UserID.toString())
+            ambiluiddriver.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
 
                 }
 
                 override fun onDataChange(p0: DataSnapshot) {
-                    if (p0.exists()) {
-                        val ambildata = p0.getValue(DriverWorking::class.java)
-                        if (ambildata != null) {
-                            namadriver = ambildata.driver.toString()
-                            statusperjalanan = ambildata.statusPerjalanan.toString()
-                            var locationLat = 0.0
-                            var locationLang = 0.0
-                            uiddriver = ambildata.uid.toString()
-                            if (ambildata.latitudeDriver != null) {
-                                locationLat = ambildata.latitudeDriver.toString().toDouble()
+                    val ambildata = p0.child("status").value.toString()
+
+                    val db: DatabaseReference =
+                        FirebaseDatabase.getInstance().getReference("Pandaan")
+                    val ambiluiddriver =
+                        FirebaseDatabase.getInstance().reference.child("BookingOjek")
+                            .child(UserID.toString()).removeValue()
+                    progressdialog.dismiss()
+                    val hapuspesanan =
+                        FirebaseDatabase.getInstance().getReference("DaftarBooking")
+                            .child(UserID.toString()).child(kode!!).removeValue().addOnCompleteListener {
+                                if (it.isSuccessful){
+                                    val hapusstatus = FirebaseDatabase.getInstance().reference.child("Pandaan")
+                                        .child("Akun_Driver").child(ambildata).child("statusOjek").removeValue()
+                                    val ref4: DatabaseReference = FirebaseDatabase.getInstance().getReference("chat")
+                                    ref4.child("latest-messages").child(UserID.toString())
+                                        .removeValue()
+                                    ref4.child("user-messages").child(UserID.toString())
+                                        .removeValue()
+                                    ref4.child("user-messages").child(uiddriver.toString())
+                                        .removeValue()
+
+                                    startActivity(intentFor<HomeActivity>().clearTask().newTask())
+                                    finish()
+                                }
                             }
-                            if (ambildata.longitudeDriver != null) {
-                                locationLang = ambildata.longitudeDriver.toString().toDouble()
-                            }
-
-                            val posisiDriver = LatLng(locationLat, locationLang)
-                            driverMarker = if (driverMarker == null) {
-                                peta?.addMarker(
-                                    MarkerOptions().position(posisiDriver).title("lokasi Driver")
-                                        .icon(
-                                            bitmapDescriptorFromVector(
-                                                this@TrackingOrderTaksiActivity,
-                                                R.mipmap.ic_car
-                                            )
-                                        )
-                                )
-                            } else {
-                                driverMarker?.remove()
-                                peta?.addMarker(
-                                    MarkerOptions().position(posisiDriver).title("lokasi Driver")
-                                        .icon(
-                                            bitmapDescriptorFromVector(
-                                                this@TrackingOrderTaksiActivity,
-                                                R.mipmap.ic_car
-                                            )
-                                        )
-                                )
-                            }
-
-
-                        } else {
-                            ambildatadriver()
-                        }
-
-                    }
                 }
 
             })
-        database2.addValueEventListener(object : ValueEventListener {
+
+
+        }
+
+
+    }
+    fun ambildatanyadriver() {
+        refdatanyadriver = FirebaseDatabase.getInstance().getReference("Pandaan").child("Akun_Driver")
+        listenerdatanyadriver = object : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val data = p0.child(kunci.toString()).getValue(DataDriver::class.java)
+                var notelp = ""
+                nama = data!!.nama.toString()
+                foto = data.foto.toString()
+                motor = data.motor.toString()
+                platnomor = data.platnomor.toString()
+                txt_namadriver.text = nama.toString()
+                txt_namamotor.text = motor.toString()
+                txt_noplat.text = platnomor.toString()
+                notelp = data.notelp.toString()
+                btn_telfonojek.setOnClickListener {
+                    if (ActivityCompat.checkSelfPermission(
+                            this@TrackingOrderTaksiActivity,
+                            Manifest.permission.CALL_PHONE
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        ActivityCompat.requestPermissions(
+                            this@TrackingOrderTaksiActivity,
+                            arrayOf(Manifest.permission.CALL_PHONE), REQUEST_PHONE_CALL
+                        )
+                    } else {
+                        startcall(notelp.toString())
+                    }
+
+                }
+
+                Picasso.get().load(foto.toString()).resize(100, 100).into(imageview)
+
+            }
+        }
+        refdatanyadriver.addValueEventListener(listenerdatanyadriver)
+    }
+
+    private fun ambildataBookingOjek(){
+        refdatabookingOjek = FirebaseDatabase.getInstance().reference.child("BookingOjek").child(UserID.toString())
+        listenerrefdatabookingOjek = object :ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                var ambildata = p0.getValue(DriverWorking::class.java)
+                var jarak = ambildata!!.jarak.toString()
+                var harga = ambildata.harga.toString()
+                txt_jarak.text = "Jarak = $jarak"
+                txt_tunai.text = "Rp. $harga"
+                txt_harga.text = "Rp. $harga"
+
+            }
+
+        }
+        refdatabookingOjek.addListenerForSingleValueEvent(listenerrefdatabookingOjek)
+
+    }
+    private fun startcall(telepon: String) {
+        val callIntent = Intent(Intent.ACTION_CALL)
+        callIntent.data = Uri.parse("tel:" + telepon)
+        startActivity(callIntent)
+    }
+    private fun ambildatadriver() {
+        val auth = FirebaseAuth.getInstance()
+        val userID = auth.currentUser!!.uid
+        refdatadriver = FirebaseDatabase.getInstance().getReference("Driver")
+        listenerdatadriver = object : ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.exists()) {
+                    val ambildata = p0.getValue(DriverWorking::class.java)
+                    if (ambildata != null) {
+                        namadriver = ambildata.driver.toString()
+                        statusperjalanan = ambildata.statusPerjalanan.toString()
+                        var locationLat = 0.0
+                        var locationLang = 0.0
+                        uiddriver = ambildata.uid.toString()
+                        if (ambildata.latitudeDriver != null) {
+                            locationLat = ambildata.latitudeDriver.toString().toDouble()
+                        }
+                        if (ambildata.longitudeDriver != null) {
+                            locationLang = ambildata.longitudeDriver.toString().toDouble()
+                        }
+
+                        val posisiDriver = LatLng(locationLat, locationLang)
+                        driverMarker = if (driverMarker == null) {
+                            peta?.addMarker(
+                                MarkerOptions().position(posisiDriver).title("lokasi Driver")
+                                    .icon(
+                                        bitmapDescriptorFromVector(
+                                            this@TrackingOrderTaksiActivity,
+                                            R.drawable.driverojek
+                                        )
+                                    )
+                            )
+                        } else {
+                            driverMarker?.remove()
+                            peta?.addMarker(
+                                MarkerOptions().position(posisiDriver).title("lokasi Driver")
+                                    .icon(
+                                        bitmapDescriptorFromVector(
+                                            this@TrackingOrderTaksiActivity,
+                                            R.drawable.driverojek
+                                        )
+                                    )
+                            )
+                        }
+
+
+                    } else {
+                        ambildatadriver()
+                    }
+
+                }
+                selesaiorder()
+
+            }
+
+        }
+
+        refdatadriver.child("DriverSibuk").child(kunci.toString())
+            .addValueEventListener(listenerdatadriver)
+
+
+    }
+
+    private fun selesaiorder(){
+        refSelesai =
+            FirebaseDatabase.getInstance().getReference("Pandaan").child("Costumers").child(UserID.toString())
+        listenerSelesai = object :ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
 
             }
 
             override fun onDataChange(snapshot: DataSnapshot) {
                 var ambildata = snapshot.getValue(DriverWorking::class.java)
-                val hargatotal = ambildata?.harga.toString()
-
                 if (ambildata?.status.toString() == "selesai") {
                     val ref = FirebaseDatabase.getInstance().getReference("chat")
                     ref.child("user_messages").child(UserID.toString()).removeValue()
-/*
-                    val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
-                    val currentDate = sdf.format(Date())
-                    val refinfo = FirebaseDatabase.getInstance().reference.child("Pandaan").child("HistoryCostumer").child(userID.toString())
-                    val usermap: HashMap<String, Any?> = HashMap()
-                    usermap["penumpang"] = ambildata?.penumpang.toString()
-                    usermap["harga"] = ambildata?.harga.toString()
-                    usermap["namatoko"] = ambildata?.namatoko.toString()
-                    usermap["ongkir"] = ambildata?.ongkir.toString()
-                    usermap["calendar"] = currentDate.toString()
-                    usermap["gambar"] = gambar.toString()
-                    refinfo.setValue(usermap)
-*/
-                    startActivity<HomeActivity>()
+                    val refhapusbooking = FirebaseDatabase.getInstance().getReference("BookingOjek")
+                        .child(UserID.toString()).removeValue()
+                    val hapusdata =
+                        FirebaseDatabase.getInstance().getReference("chat").child("statusnotif")
+                            .child(UserID.toString()).removeValue()
+                    val hapuspesanan =
+                        FirebaseDatabase.getInstance().getReference("DaftarBooking")
+                            .child(UserID.toString()).child(kode!!).removeValue()
+                    val ref4: DatabaseReference = FirebaseDatabase.getInstance().getReference("chat")
+                    ref4.child("latest-messages").child(UserID.toString())
+                        .removeValue()
+                    ref4.child("user-messages").child(UserID.toString())
+                        .removeValue()
+                    ref4.child("user-messages").child(uiddriver.toString())
+                        .removeValue()
+                    val hapusstatuscancel = FirebaseDatabase.getInstance().getReference("Pandaan").child("Costumers")
+                        .child(UserID.toString()).child("status").removeValue()
+                    startActivity(intentFor<HomeActivity>().clearTask().newTask())
                     finish()
                 }
             }
 
-        })
 
+        }
+        refSelesai.addListenerForSingleValueEvent(listenerSelesai)
 
     }
 
-    fun showMainMarker(lat: Double, lon: Double, msg: String) {
+    fun gambarnotif() {
+        refNotif = FirebaseDatabase.getInstance().getReference("chat").child("statusnotif")
+            .child(UserID.toString())
+        listenerNotif = object :ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+                TODO("Not yet implemented")
+            }
 
-        val res = this.resources
-//        val marker1 = BitmapFactory.decodeResource(res, R.mipmap)
-//        val smallmarker = Bitmap.createScaledBitmap(marker1, 80, 120, false)
+            override fun onDataChange(p0: DataSnapshot) {
+                if (p0.child("status").exists()) {
+                    btn_chatojek.setBackgroundResource(R.drawable.kotakbiruovalsolidnotif)
+                } else {
+                    btn_chatojek.setBackgroundResource(R.drawable.kotakbiruovalsolid)
+                }
+            }
 
-        val coordinate = LatLng(lat, lon)
-        peta!!.addMarker(
-            MarkerOptions().position(coordinate).title(msg)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-        )
-        val cameraPosition =
-            CameraPosition.Builder().target(coordinate).zoom(15f).build()
-        peta!!.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-        peta!!.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 15f))
+        }
+        refNotif.addValueEventListener(listenerNotif)
     }
 
     fun showTujuanMarker(lat: Double, lon: Double, msg: String) {
@@ -276,9 +415,9 @@ class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
 
         val markersList: MutableList<Marker> = ArrayList()
         val youMarker: Marker =
-            peta!!.addMarker(MarkerOptions().position(marker1).title(namaawal))
+            peta!!.addMarker(MarkerOptions().position(marker1).title(namaawal).visible(false))
         val playerMarker: Marker =
-            peta!!.addMarker(MarkerOptions().position(marker2).title(namatujuan))
+            peta!!.addMarker(MarkerOptions().position(marker2).title(namatujuan).visible(false))
 
         markersList.add(youMarker)
         markersList.add(playerMarker)
@@ -294,46 +433,6 @@ class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
             peta!!.animateCamera(cu)
         })
 
-    }
-
-    @SuppressLint("CheckResult")
-    private fun route(
-        latitude: String,
-        longitude: String,
-        latitudeTujuan: String,
-        longitudeTujuan: String
-    ) {
-        val origin = latitude.toString() + "," + longitude.toString()
-        val dest = latitudeTujuan.toString() + "," + longitudeTujuan.toString()
-        NetworkModule.getService()
-            .actionRoute(origin, dest, "AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE")
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.io())
-            .subscribe({ t: ResultRoute? ->
-                showData(t?.routes)
-            },
-                {})
-    }
-
-    private fun showData(routes: List<RoutesItem?>?) {
-
-
-        if (routes != null) {
-
-            val point = routes.get(0)?.overviewPolyline?.points
-            val jarakValue = routes[0]?.legs?.get(0)?.distance?.value
-            val waktu = routes[0]?.legs?.get(0)?.duration?.text
-            val pricex = jarakValue!!.toDouble().let { Math.round(it) }
-            val price = pricex.div(1000.0).times(2000.0)
-            peta?.let {
-                point?.let { it1 ->
-                    DirectionMapsV2.gambarRoute(
-                        it,
-                        it1
-                    )
-                }
-            }
-        }
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor? {
@@ -368,12 +467,88 @@ class TrackingOrderTaksiActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onDestroy() {
         maporder?.onDestroy()
+        refdatanyadriver.removeEventListener(listenerdatanyadriver)
+        refdatadriver.removeEventListener(listenerdatadriver)
+        refNotif.removeEventListener(listenerNotif)
+        refSelesai.removeEventListener(listenerSelesai)
         super.onDestroy()
+        finish()
+
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         maporder?.onLowMemory()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        refdatanyadriver.removeEventListener(listenerdatanyadriver)
+        refdatadriver.removeEventListener(listenerdatadriver)
+        refNotif.removeEventListener(listenerNotif)
+        refSelesai.removeEventListener(listenerSelesai)
+        startActivity(intentFor<HomeActivity>().clearTask().newTask())
+        finish()
+    }
+    fun Findroutes(Start: LatLng?, End: LatLng?) {
+        if (Start == null || End == null) {
+            toast("tidak dapat mendapatkan aplikasi")
+        } else {
+            val routing: Routing = Routing.Builder()
+                .travelMode(AbstractRouting.TravelMode.WALKING)
+                .withListener(this)
+                .alternativeRoutes(true)
+                .waypoints(Start, End)
+                .key("AIzaSyADQdBkk1SNyX7jWXRZFlJQz8TWT-M-TeE") //also define your api key here.
+                .build()
+            routing.execute()
+
+        }
+    }
+
+    override fun onRoutingCancelled() {
+        Findroutes(start, end)
+    }
+
+    override fun onRoutingStart() {
+        toast("mencari route")
+    }
+
+    override fun onRoutingFailure(p0: RouteException?) {
+        val parentLayout = findViewById<View>(android.R.id.content)
+        val snackbar: Snackbar = Snackbar.make(parentLayout, p0.toString(), Snackbar.LENGTH_LONG)
+        snackbar.show()
+//    Findroutes(start,end);
+    }
+
+    protected var start: LatLng? = null
+    protected var end: LatLng? = null
+
+    //polyline object
+    private var polylines: List<Polyline>? = null
+
+    override fun onRoutingSuccess(routes: ArrayList<Route>?, shortestRouteIndex: Int) {
+        val center = CameraUpdateFactory.newLatLng(start)
+        val zoom = CameraUpdateFactory.zoomTo(16F)
+
+        val polyOptions = PolylineOptions()
+        var polylineStartLatLng: LatLng? = null
+        var polylineEndLatLng: LatLng? = null
+        polylines = ArrayList()
+        for (i in 0 until routes!!.size) {
+            if (i == shortestRouteIndex) {
+                polyOptions.color(Color.RED)
+                polyOptions.width(7F)
+                polyOptions.addAll(routes.get(shortestRouteIndex).points)
+                val polyline = peta!!.addPolyline(polyOptions)
+                polylineStartLatLng = polyline.points.get(0)
+                val k = polyline.points.size
+                polylineEndLatLng = polyline.points.get(k - 1)
+                (polylines as ArrayList<Polyline>).add(polyline)
+            } else {
+            }
+        }
+
     }
 
 

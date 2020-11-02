@@ -1,0 +1,380 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutBottomSheet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite"
+    android:orientation="vertical"
+    app:behavior_peekHeight="225dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CANCEL ORDERAN"
+        android:textColor="#ffffff"
+        android:textSize="20dp"
+        android:background="#AC4040"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/btn_cancel"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.65999997">
+
+
+        <RelativeLayout
+            android:id="@+id/baris2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+
+            <ImageView
+                android:id="@+id/gambarwarung"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/icon_warung" />
+
+            <TextView
+                android:id="@+id/txt_namawarung"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/gambarwarung"
+                android:fontFamily="@font/aleo_bold"
+                android:maxLength="70"
+                android:text="Warung Nikmat"
+                android:textColor="#204975"
+                android:textSize="17dp" />
+
+            <TextView
+                android:id="@+id/detail_alamatwarung"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_namawarung"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/gambarwarung"
+                android:fontFamily="@font/aleo_regular"
+                android:maxLength="70"
+                android:text="alamat warung"
+                android:textColor="#204975"
+                android:textSize="15dp" />
+
+            <ImageView
+                android:id="@+id/line"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_below="@+id/gambarwarung"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/line" />
+
+            <ImageView
+                android:id="@+id/gambarmaps"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_below="@+id/line"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/maps" />
+
+            <TextView
+                android:id="@+id/namatujuanwarung"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/gambarmaps"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@id/gambarwarung"
+                android:fontFamily="@font/aleo_regular"
+                android:maxLength="70"
+                android:text="Puskesmas Pandaan"
+                android:textColor="#204975"
+                android:textSize="15dp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/baris3"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_below="@+id/baris2"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/kotakgarishitam"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/baris2">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/aleo_bold"
+                    android:text="Harga Pesanan"
+                    android:textColor="#204975"
+
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/aleo_bold"
+                    android:text="Ongkos Kirim"
+                    android:textColor="#204975" />
+
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                android:orientation="vertical"
+                android:paddingLeft="5dp"
+                android:paddingTop="5dp">
+
+                <TextView
+                    android:id="@+id/txt_hargawarung"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/aleo_bold"
+                    android:text="Rp. 0"
+                    android:textColor="#204975" />
+
+                <TextView
+                    android:id="@+id/txt_ongkir"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/aleo_bold"
+                    android:text="Rp. 0"
+                    android:textColor="#204975" />
+
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/kotakbirusolid">
+
+                <TextView
+                    android:id="@+id/txt_tagihanwarung"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:text="TAGIHAN TUNAI"
+                    android:textColor="#ffffff" />
+
+            </RelativeLayout>
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:paddingLeft="5dp"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/kotakgarishitam"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jarak = 0KM"
+                android:fontFamily="@font/aleo_regular"
+                android:textSize="10dp"
+                android:textColor="#204975"
+                android:id="@+id/txt_jarak"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tunai = Rp. 0"
+                android:id="@id/txt_harga"
+                android:fontFamily="@font/aleo_regular"
+                android:textSize="10dp"
+                android:textColor="#204975"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="10dp"
+
+                />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/img_fotodriver"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/profil" />
+
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/txt_namadriver"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/alef_bold"
+                android:text="Boss Alfan Ganteng"
+                android:textColor="#204975"
+                android:textSize="17dp" />
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/txt_namamotor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_namadriver"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/aleo_regular"
+                android:textColor="#A4A4A4"
+                android:text="Yamaha Olong"
+                android:textSize="15dp" />
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/txt_noplat"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_namamotor"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/aleo_regular"
+                android:textColor="#A4A4A4"
+                android:text="N 1234 AY"
+                android:textSize="15dp" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:id="@+id/rating"
+                android:text="Rating"
+                android:textStyle="bold"
+
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/star"
+                android:layout_toLeftOf="@+id/txt_rating"
+                android:id="@+id/btn_chat"
+                android:layout_below="@id/rating"
+
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@+id/rating"
+                android:id="@+id/txt_rating"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="5dp"
+                android:text="5.0"
+                android:textStyle="bold"
+
+                />
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:layout_centerHorizontal="true"
+                >
+
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/btn_telfonojek"
+                    android:background="@drawable/kotakbiruovalsolid"
+                    android:text="Telepon"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/alef_bold"
+                    android:textColor="#ffffff"
+
+                    />
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="Kirim Pesan"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/alef_bold"
+                    android:textColor="#ffffff"
+                    android:background="@drawable/kotakbiruovalsolid"
+                    android:id="@+id/btn_chatojek"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

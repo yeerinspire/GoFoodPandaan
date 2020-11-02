@@ -24,6 +24,9 @@ class ModelUsers {
     var keterangan:String? = null
     var statusrating:Boolean? = null
     var ratingdriver:String? = null
+    var telefon:String? = null
+    var hargatotal:Int? = null
+
 
     constructor(){
 
@@ -51,7 +54,9 @@ class ModelUsers {
         foto: String?,
         keterangan: String?,
         statusrating: Boolean?,
-        ratingdriver: String?
+        ratingdriver: String?,
+        telefon: String?,
+        hargatotal: Int?
     ) {
         this.name = name
         this.email = email
@@ -75,6 +80,8 @@ class ModelUsers {
         this.keterangan = keterangan
         this.statusrating = statusrating
         this.ratingdriver = ratingdriver
+        this.telefon = telefon
+        this.hargatotal = hargatotal
     }
 
 

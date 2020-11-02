@@ -6,315 +6,311 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     tools:context=".IkiWarung.FoodDelivery.CartActivity">
-    <RelativeLayout
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rv_2"
-        >
-
-        <LinearLayout
-            android:id="@+id/ll_lokasi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/txt_lokasitoko"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp"
-                android:text="Klik untuk menentukan lokasi toko anda"
-                android:textSize="18dp"/>
-
-
-
-        </LinearLayout>
-
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/maps"
-            android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:layout_below="@+id/ll_lokasi"
-            tools:context=".VerifikasiData"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            />
-
-        <Button
-            android:id="@+id/btn_konfirmlokasi"
+        android:layout_height="match_parent">
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:text="KONFIRM"
-            android:layout_below="@id/maps"
-            />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rv1"
-        >
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/btn_proses"
+            android:id="@+id/rv1"
             >
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_above="@+id/ln_pembayaran"
+                >
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    >
+
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="parent">
+
+
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_cart"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+                    <TextView
+                        android:id="@+id/textView15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="18sp"
+                        android:text="Daftar Pesanan"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+
+
+                    <TextView
+                        android:id="@+id/homeAwal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/amarant_regular"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:text="Jalan Kamboja Gondangwetan pasuruan"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.04"
+                        app:layout_constraintStart_toEndOf="@+id/imageView7"
+                        app:layout_constraintTop_toBottomOf="@+id/name" />
+
+                    <ImageView
+                        android:id="@+id/imageView7"
+                        android:layout_width="40dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView9"
+                        app:srcCompat="@drawable/lokasikuning" />
+
+                    <TextView
+                        android:id="@+id/name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Warung Badokan Joss"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/aldrich_regular"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.05"
+                        app:layout_constraintStart_toEndOf="@+id/textView9"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/textView9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="353dp"
+                        android:layout_marginRight="353dp"
+                        android:text="TextView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_back_black_24dp"
+                        tools:ignore="VectorDrawableCompat" />
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="#000000"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+            </ScrollView>
+            <RelativeLayout
+                android:background="#F8F8F8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/ln_pembayaran"
+                android:layout_above="@+id/rv_rincianbiaya"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BAYAR MENGGUNAKAN :"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/alef_bold"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/textba"
+                    />
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="27dp"
+                    android:text="PAYLESS"
+                    android:layout_marginLeft="20dp"
+                    android:textSize="10dp"
+                    android:layout_toLeftOf="@+id/btn_tunai"
+                    android:fontFamily="@font/alef_regular"
+                    android:background="@drawable/kotakkecil"
+                    android:id="@+id/btn_payless"
+                    />
+
+                <Button
+                    android:layout_width="50dp"
+                    android:layout_height="27dp"
+                    android:text="Tunai"
+                    android:scaleType="fitEnd"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="10dp"
+                    android:layout_gravity="end"
+                    android:id="@+id/btn_tunai"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="#ffffff"
+                    android:textSize="10dp"
+                    android:background="@drawable/kotakbiru"
+                    android:fontFamily="@font/alef_regular"
+
+                    />
+
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rv_rincianbiaya"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/kotalputih"
+                android:layout_above="@+id/btn_proses"
+                android:layout_marginBottom="10dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 >
 
                 <TextView
-                    android:id="@+id/textView24"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="BAYAR MENGGUNAKAN"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.56"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-                    tools:text="BAYAR MENGGUNAKAN" />
+                    android:fontFamily="@font/alef_bold"
+                    android:text="Rincian Biaya"
+                    android:textSize="16dp"
+                    android:id="@+id/text"
+                    />
 
                 <TextView
-                    android:id="@+id/textView22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/kotakkecil"
-                    android:paddingTop="12dp"
-                    android:text="PAYLESS"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.4"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView24" />
+                    android:fontFamily="@font/alef_bold"
+                    android:text="Harga"
+                    android:textSize="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@id/text"
+                    android:id="@+id/text2"
+                    />
 
                 <TextView
-                    android:id="@+id/textView23"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/kotakkecil"
-                    android:paddingLeft="5dp"
-                    android:paddingTop="12dp"
-                    android:text="TUNAI"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.25"
-                    app:layout_constraintStart_toEndOf="@+id/textView22"
-                    app:layout_constraintTop_toBottomOf="@+id/textView24" />
+                    android:text="Rp. 0"
+                    android:layout_alignBottom="@+id/text2"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="10dp"
+                    android:fontFamily="@font/alef_bold"
+                    android:id="@+id/foodprice"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/alef_bold"
+                    android:text="Diskon"
+                    android:textSize="15dp"
+                    android:layout_below="@id/text2"
+                    android:id="@+id/text3"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:layout_alignBottom="@+id/text3"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="10dp"
+                    android:fontFamily="@font/alef_bold"
+                    android:id="@+id/fooddiscount"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/alef_bold"
+                    android:text="Ongkos Kirim"
+                    android:textSize="15dp"
+                    android:layout_below="@id/text3"
+                    android:id="@+id/text4"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp. 0"
+                    android:layout_alignBottom="@+id/text4"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="10dp"
+                    android:fontFamily="@font/alef_bold"
+                    android:id="@+id/shipping"
+                    />
 
-                <LinearLayout
-                    android:id="@+id/linearLayout2"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/text4"
                     android:background="#F3B11A"
-                    android:orientation="horizontal"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView19">
+                    android:layout_marginTop="10dp"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total Biaya"
+                        android:fontFamily="@font/alef_bold"
+                        android:textSize="16dp"
+                        />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:text="Total Biaya" />
-
-                    <TextView
-                        android:id="@+id/txt_hasil"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_alignParentEnd="true"
                         android:layout_marginRight="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:gravity="end"
-                        android:text="Total Biaya" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/textView16"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:text="TextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.04"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rv_cart"
-                    tools:text="Rincian Biaya" />
-
-                <TextView
-                    android:id="@+id/textView17"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="Harga"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.04"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView16"
-                    tools:text="Harga" />
-
-                <TextView
-                    android:id="@+id/hargamakanan"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:text="Harga"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView16"
-                    tools:text="0" />
-
-                <TextView
-                    android:id="@+id/textView18"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Diskon"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.04"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView17"
-                    tools:text="Diskon" />
-
-                <TextView
-                    android:id="@+id/textView26"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:text="Diskon"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView17"
-                    tools:text="-" />
-
-                <TextView
-                    android:id="@+id/textView19"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Ongkos Kirim"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.04"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView18"
-                    tools:text="Rincian Biaya" />
-
-                <TextView
-                    android:id="@+id/ongkirpay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginRight="16dp"
-                    android:text="0"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView18"
-                    tools:text="Rincian Biaya" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_cart"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView15" />
-
-                <TextView
-                    android:id="@+id/textView15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textSize="18sp"
-                    android:text="Daftar Pesanan"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.05"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/view" />
+                        android:text="Rp. 0"
+                        android:id="@+id/totalprice"
+                        android:fontFamily="@font/alef_bold"
+                        />
+                </RelativeLayout>
 
 
-
-                <TextView
-                    android:id="@+id/homeAwal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textStyle="bold"
-                    android:text="TextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.04"
-                    app:layout_constraintStart_toEndOf="@+id/imageView7"
-                    app:layout_constraintTop_toBottomOf="@+id/name" />
-
-                <ImageView
-                    android:id="@+id/imageView7"
-                    android:layout_width="40dp"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.05"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView9"
-                    app:srcCompat="@drawable/lokasikuning" />
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Warung Badokan Joss"
-                    android:textSize="18sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.05"
-                    app:layout_constraintStart_toEndOf="@+id/textView9"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <ImageView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="353dp"
-                    android:layout_marginRight="353dp"
-                    android:text="TextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_arrow_back_black_24dp"
-                    tools:ignore="VectorDrawableCompat" />
-
-                <View
-                    android:id="@+id/view"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginTop="16dp"
-                    android:background="#000000"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/homeAwal" />
+            </RelativeLayout>
+            <Button
+                android:id="@+id/btn_proses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#204975"
+                android:text="PESAN SEKARANG"
+                android:layout_alignParentBottom="true"
+                />
+        </RelativeLayout>
 
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        </ScrollView>
-        <Button
-            android:id="@+id/btn_proses"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#204975"
-            android:text="PESAN SEKARANG"
-            android:layout_alignParentBottom="true"
-            />
-    </RelativeLayout>
+
+    <com.google.android.gms.maps.MapView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="200dp"
+        android:id="@+id/maps"
+        tools:context=".IkiWarung.FoodDelivery.CartActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
+    <include layout="@layout/activity_pilih_mapswarung" />
+
 
 </RelativeLayout>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cv_item_product"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/linear1"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/fotomakanan"
+                    android:layout_width="140dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/snack"
+
+                    />
+
+                <TextView
+                    android:id="@+id/namamakanan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14sp"
+                    android:layout_toRightOf="@id/fotomakanan"
+                    android:text="Martabak Manis"
+                    android:fontFamily="@font/alef_bold"
+                    android:textColor="#2D0C57"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/btn_hapus"
+                    android:background="@drawable/sampah"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="10dp"
+                    />
+
+                <TextView
+                    android:id="@+id/txt_catatan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/namamakanan"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@id/fotomakanan"
+                    android:text="Catatan"
+                    android:fontFamily="@font/alegreya_regular"
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@id/fotomakanan"
+>
+
+                    <TextView
+                        android:id="@+id/txt_hargamakanan"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:text="Rp. 0 "
+                        android:textColor="#204975"
+                        android:fontFamily="@font/aladin"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentEnd="true"
+                        >
+                    <ImageView
+                        android:id="@+id/btn_plus"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/plus" />
+
+                    <TextView
+                        android:id="@+id/counter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="#204975"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/aladin"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        />
+
+                    <ImageView
+                        android:id="@+id/btn_min"
+                        android:layout_width="30dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/min" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

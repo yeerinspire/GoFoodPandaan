@@ -7,11 +7,15 @@
     android:elevation="5dp"
     android:layout_marginStart="16dp"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp">
+    android:layout_marginLeft="16dp"
+    >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+
+        >
 
 
         <LinearLayout
@@ -58,16 +62,19 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/semibold"
             android:text="Float Cake Vietnam"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:textColor="#091020"
             android:textSize="17sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/gambar_makanan" />
 
         <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:id="@+id/keterangan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:text="iku rasane onok uyahe kadang onok betadin sak karepe wes"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

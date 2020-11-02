@@ -9,6 +9,7 @@ class DataDriver {
     var password : String? = null
     var platnomor : String? = null
     var statusOjek : String? = null
+    var notelp : String? = null
 
     constructor(){
 
@@ -21,7 +22,8 @@ class DataDriver {
         nama: String?,
         password: String?,
         platnomor: String?,
-        statusOjek: String?
+        statusOjek: String?,
+        notelp: String?
     ) {
         this.email = email
         this.foto = foto
@@ -30,6 +32,7 @@ class DataDriver {
         this.password = password
         this.platnomor = platnomor
         this.statusOjek = statusOjek
+        this.notelp = notelp
     }
 
 

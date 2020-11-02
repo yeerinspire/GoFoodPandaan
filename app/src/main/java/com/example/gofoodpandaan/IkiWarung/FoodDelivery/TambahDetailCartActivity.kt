@@ -52,15 +52,13 @@ class TambahDetailCartActivity : AppCompatActivity() {
                 counter = counter - 1
             }
             nilai = harga.toString().toInt() * counter
-            txt_counter.text = counter.toString()
-           hargatotal.text = "Rp. ${nilai.toString()}"
+             hargatotal.text = "Rp. ${nilai.toString()}"
 
         }
 
         btn_up.setOnClickListener {
             counter += 1
             nilai = harga.toString().toInt() * counter
-            txt_counter.text = counter.toString()
             hargatotal.text = "Rp. ${nilai.toString()}"
         }
 

@@ -40,7 +40,6 @@ class chatActivity : AppCompatActivity(),AnkoLogger {
         platdriver = bundle.getString("platdriver")
         auth = FirebaseAuth.getInstance()
         userID = auth.currentUser!!.uid
-        info { "yeri $namadriver $uiddriver" }
 
         swiperefresh.setColorSchemeColors(ContextCompat.getColor(this,R.color.colorAccent))
         recyclerview_chat_log.adapter = adapter
@@ -49,10 +48,11 @@ class chatActivity : AppCompatActivity(),AnkoLogger {
         txt_platnomor.text = platdriver.toString()
 
         ambildata()
-
         send_button_chat_log.setOnClickListener {
             performSendMessage()
         }
+        val hapusdata = FirebaseDatabase.getInstance().getReference("chat").child("statusnotif").child(userID.toString()).removeValue()
+
 
     }
 
@@ -130,8 +130,8 @@ class chatActivity : AppCompatActivity(),AnkoLogger {
         toReference.setValue(chatMessage)
 
 
-        val latestMessageRef = FirebaseDatabase.getInstance().getReference("/chat/latest-messages/$userID/$uiddriver")
-        latestMessageRef.setValue(chatMessage)
+        val latestMessageRef = FirebaseDatabase.getInstance().getReference("/chat/statusnotif/$uiddriver")
+        latestMessageRef.child("status").setValue("adanotif")
 
         val latestMessageToRef = FirebaseDatabase.getInstance().getReference("/chat/latest-messages/$uiddriver/$userID")
         latestMessageToRef.setValue(chatMessage)
