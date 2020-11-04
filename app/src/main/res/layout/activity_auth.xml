@@ -17,7 +17,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_masuk"
-        app:layout_constraintVertical_bias="0.25"
         app:srcCompat="@drawable/teksfacebook" />
 
     <ImageButton
@@ -52,9 +51,10 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView9"
-        app:layout_constraintVertical_bias="0.07999998"
+        app:layout_constraintVertical_bias="0.04"
         app:srcCompat="@drawable/logobawah" />
 
     <ImageView
@@ -72,6 +72,7 @@
         android:id="@+id/imageView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

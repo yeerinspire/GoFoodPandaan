@@ -7,7 +7,7 @@
         android:layout_width="30pt"
         android:layout_height="30pt"
         android:background="@drawable/time"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
         android:id="@+id/imagejam"
         />
@@ -50,9 +50,9 @@
     </LinearLayout>
 
     <ImageView
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:layout_marginRight="10dp"
+        android:layout_width="10dp"
+        android:layout_height="14dp"
+        android:layout_marginRight="25dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:background="@drawable/panah"

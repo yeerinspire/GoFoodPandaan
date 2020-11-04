@@ -120,7 +120,7 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
                             android:gravity="center"
-                            android:text="5.3 KM" />
+                            android:text="0 KM" />
 
 
                     </LinearLayout>
@@ -148,7 +148,7 @@
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
                             android:gravity="center"
-                            android:text="7000"
+                            android:text="0"
                             android:id="@+id/price_ongkir"
                             />
 
@@ -273,13 +273,13 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#fff"
-                    android:text="Tagih"
-                    android:maxLines="1"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="Keranjang"
+                    android:textColor="#fff"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
                 <TextView
                     android:id="@+id/total_price"
                     android:textSize="16sp"

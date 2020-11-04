@@ -11,19 +11,19 @@
 
 
 
-    <Button
+    <TextView
         android:id="@+id/btn_cancel"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CANCEL ORDERAN"
-        android:textColor="#ffffff"
-        android:textSize="20dp"
-        android:background="#AC4040"
+        android:text="Batalkan Orderan"
+        android:textColor="#752020"
+        android:textSize="14dp"
+        android:fontFamily="@font/aleo_bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="1.0" />
+        android:layout_marginTop="450dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/kotakbirusolid">
@@ -67,7 +67,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="30dp"
@@ -109,18 +109,18 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="27dp"
             android:paddingLeft="5dp"
             android:gravity="center_vertical"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/kotakgarishitam"
+            android:background="@drawable/kotakjarak"
             >
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Jarak = 0KM"
+                android:text="Jarak = 0 KM"
                 android:fontFamily="@font/aleo_regular"
                 android:textSize="10dp"
                 android:textColor="#204975"
@@ -163,7 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/img_fotodriver"
                 android:fontFamily="@font/alef_bold"
-                android:text="Boss Alfan Ganteng"
+                android:text="Nama Driver"
                 android:textColor="#204975"
                 android:textSize="17dp" />
             <TextView
@@ -175,7 +175,7 @@
                 android:layout_toRightOf="@id/img_fotodriver"
                 android:fontFamily="@font/aleo_regular"
                 android:textColor="#A4A4A4"
-                android:text="Yamaha Olong"
+                android:text="Merk Motor"
                 android:textSize="15dp" />
             <TextView
                 android:layout_marginLeft="5dp"
@@ -188,6 +188,18 @@
                 android:fontFamily="@font/aleo_regular"
                 android:textColor="#A4A4A4"
                 android:text="N 1234 AY"
+                android:textSize="15dp" />
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/txt_status"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/txt_noplat"
+                android:layout_toRightOf="@id/img_fotodriver"
+                android:fontFamily="@font/aleo_regular"
+                android:textColor="#FF0000"
+                android:text="Status = Tiba 0 Menit Lagi"
                 android:textSize="15dp" />
 
 

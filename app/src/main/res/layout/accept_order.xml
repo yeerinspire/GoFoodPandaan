@@ -122,9 +122,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Jarak : 10 KM"
-        android:textSize="18sp"
-
+        android:text="Jarak : 0 KM"
+        android:textSize="12dp"
+        android:layout_marginTop="15dp"
         android:layout_gravity="center"
         android:layout_below="@id/txt_hargaongkir"
         android:fontFamily="@font/open_sans_bold"
@@ -132,8 +132,8 @@
         />
 
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="245dp"
+        android:layout_height="38dp"
         android:src="@drawable/setjemput"
         android:text="PESAN SEKARANG!"
         android:fontFamily="@font/alef_bold"
@@ -142,6 +142,7 @@
         android:layout_gravity="center"
         android:background="@drawable/kotakmelengkung"
         android:id="@+id/btn_jemput"
+        android:layout_marginTop="10dp"
         />
 
 

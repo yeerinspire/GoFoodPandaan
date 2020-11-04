@@ -139,7 +139,7 @@
             android:layout_toRightOf="@id/gambarwarung"
             android:fontFamily="@font/aleo_bold"
             android:maxLength="70"
-            android:text="Warung Nikmat"
+            android:text="Nama Customer"
             android:textColor="#204975"
             android:textSize="17dp" />
 
@@ -152,14 +152,14 @@
             android:layout_toRightOf="@id/gambarwarung"
             android:fontFamily="@font/aleo_regular"
             android:maxLength="70"
-            android:text="alamat warung"
+            android:text="Alamat Customer"
             android:textColor="#204975"
             android:textSize="15dp" />
 
         <ImageView
             android:id="@+id/line"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="40dp"
             android:layout_below="@+id/gambarwarung"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="10dp"
@@ -167,9 +167,10 @@
 
         <ImageView
             android:id="@+id/gambarmaps"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_below="@+id/line"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="10dp"
             android:src="@drawable/maps" />
 
@@ -180,9 +181,9 @@
             android:layout_alignTop="@+id/gambarmaps"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@id/gambarwarung"
-            android:fontFamily="@font/aleo_regular"
+            android:fontFamily="@font/aleo_bold"
             android:maxLength="70"
-            android:text="Puskesmas Pandaan"
+            android:text="Tujuan"
             android:textColor="#204975"
             android:textSize="15dp" />
 
@@ -191,7 +192,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -217,10 +218,12 @@
                 android:layout_alignTop="@+id/fotodriver"
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@+id/fotodriver"
-                android:fontFamily="@font/alef_regular"
+                android:fontFamily="@font/aleo_bold"
                 android:text="Nama Driver"
+                android:layout_marginTop="20dp"
                 android:textColor="#204975"
-                android:textSize="14dp" />
+                android:textSize="14dp"
+                />
 
             <TextView
                 android:id="@+id/txt_platnomor"
@@ -230,8 +233,8 @@
                 android:layout_alignLeft="@+id/txt_namadriver"
                 android:layout_toRightOf="@+id/fotodriver"
                 android:fontFamily="@font/alef_regular"
-                android:text="Nama Driver"
-                android:textColor="#204975"
+                android:text="Plat Nomor"
+                android:textColor="#A4A4A4"
                 android:textSize="14dp" />
 
         </RelativeLayout>
@@ -242,7 +245,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/baris1"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="20dp"
             android:numStars="5"
             android:stepSize="1"
             android:theme="@style/Ratingbar" />

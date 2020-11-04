@@ -52,43 +52,40 @@
 
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_gravity="center_horizontal"
+                >
 
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_width="100dp"
+                    android:layout_height="92dp"
                     android:layout_marginLeft="10dp"
-
                     android:orientation="vertical"
-                    android:background="@drawable/makanan"
+                    android:background="@drawable/terlaris"
                     >
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="10dp"
-
+                    android:layout_width="100dp"
+                    android:layout_height="92dp"
+                    android:layout_marginLeft="15dp"
                     android:orientation="vertical"
-                    android:background="@drawable/minuman"
+                    android:background="@drawable/terdekat"
                     >
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginLeft="10dp"
+                    android:layout_width="100dp"
+                    android:layout_height="92dp"
+                    android:layout_marginLeft="15dp"
                     android:layout_marginRight="10dp"
                     android:orientation="vertical"
-                    android:background="@drawable/snack"
+                    android:background="@drawable/diskon"
                     >
                 </LinearLayout>
 
@@ -107,10 +104,11 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
 
             <com.alfanshter.jatimpark.customfont.semibold
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Warung Lainnya"
+                android:fontFamily="@font/aleo_bold"
+                android:layout_marginTop="20dp"
                 android:layout_marginLeft="5dp"
                 android:textColor="@color/txt_color"
                 android:textSize="17sp" />

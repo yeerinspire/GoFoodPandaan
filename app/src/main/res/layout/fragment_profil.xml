@@ -55,44 +55,128 @@
 
             </com.google.android.material.appbar.AppBarLayout>
             <TextView
-                android:layout_marginLeft="10dp"
                 android:textColor="#000000"
-                android:textSize="18sp"
-
-                android:id="@+id/txt_bantuan"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Bantuan"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_ratingkami" />
-
-            <TextView
-                android:layout_marginLeft="10dp"
-                android:textColor="#000000"
-                android:textSize="18sp"
-
-                android:id="@+id/txt_ratingkami"
+                android:textSize="12dp"
+                android:layout_marginLeft="40dp"
+                android:fontFamily="@font/aleo_regular"
+                android:id="@+id/email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Rating Kami"
+                android:text="E-Mail"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_whatsapp" />
+            <TextView
+                android:textColor="#000000"
+                android:textSize="12dp"
+                android:layout_marginLeft="40dp"
+                android:fontFamily="@font/aleo_regular"
+                android:id="@+id/txt_whatsapp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Whatsapp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_telepon" />
+            <TextView
+                android:textColor="#000000"
+                android:textSize="12dp"
+                android:layout_marginLeft="40dp"
+                android:fontFamily="@font/aleo_regular"
+                android:id="@+id/txt_telepon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Telepon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_hubungi" />
+            <TextView
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/aleo_bold"
+                android:id="@+id/txt_hubungi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Hubungi Kami"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/website" />
+
+            <TextView
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/aleo_bold"
+                android:id="@+id/txt_tentang"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Tentang Kami"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView12" />
+            <TextView
+                android:textColor="#000000"
+                android:textSize="12dp"
+                android:layout_marginLeft="40dp"
+                android:fontFamily="@font/aleo_regular"
+                android:id="@+id/berirating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Beri Rating Kami"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_tentang" />
+            <TextView
+                android:textColor="#000000"
+                android:textSize="12dp"
+                android:layout_marginLeft="40dp"
+                android:fontFamily="@font/aleo_regular"
+                android:id="@+id/ig"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Instagram"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/berirating" />
+            <TextView
+                android:textColor="#000000"
+                android:textSize="12dp"
+                android:layout_marginLeft="40dp"
+                android:fontFamily="@font/aleo_regular"
+                android:id="@+id/website"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Website"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ig" />
 
             <TextView
-                android:layout_marginLeft="10dp"
                 android:textColor="#000000"
-                android:textSize="18sp"
-
                 android:id="@+id/textView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:textSize="15dp"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/aleo_bold"
                 android:text="Pilih Bahasa"
                 app:layout_constraintEnd_toStartOf="@+id/textView5"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -100,10 +184,10 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
             <TextView
-                android:layout_marginLeft="10dp"
+                android:textSize="15dp"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/aleo_bold"
                 android:textColor="#000000"
-                android:textSize="18sp"
-
                 android:id="@+id/textView11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -118,12 +202,12 @@
                 android:id="@+id/txt_riwayatpesanan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="30dp"
                 android:text="Riwayat Pesanan"
                 android:textColor="#000000"
-                android:textSize="18sp"
+                android:textSize="15dp"
+                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/aleo_bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -170,7 +254,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Mukhammad Alfan Nurdin"
+                        android:text="Nama Pengguna"
                         android:textColor="#000000"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -182,7 +266,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="085655021997"
+                        android:text="000000000000"
                         android:textColor="#000000"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -195,7 +279,7 @@
 
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="alfanno8@gmail.com"
+                        android:text="a@gmail.com"
                         android:textColor="#000000"
                         android:textSize="18sp"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -209,15 +293,15 @@
     </ScrollView>
 
 <Button
-    android:layout_width="wrap_content"
+    android:layout_width="270dp"
     android:id="@+id/btn_keluar"
-    android:layout_height="wrap_content"
+    android:layout_height="30dp"
     android:layout_alignParentBottom="true"
     android:background="@drawable/kotakmerah"
     android:layout_centerHorizontal="true"
     android:text="KELUAR"
     android:textColor="#ffffff"
-    android:textSize="20dp"
+    android:textSize="12dp"
     android:layout_marginBottom="10dp"
     />
 </RelativeLayout>

@@ -7,15 +7,17 @@
     tools:context=".SearchActivity">
 
     <com.mancj.materialsearchbar.MaterialSearchBar
+        style="@style/MaterialSearchBarLight"
+        app:mt_speechMode="false"
+        app:mt_hint="Tujuan Lokasi"
+        app:mt_maxSuggestionsCount="10"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/searachfood"
-        app:mt_navIconEnabled="true"
-        app:mt_placeholder="Mau makan dimana ?"
-        style="@style/MaterialSearchBarLight"
-
-
-        />
+        android:layout_margin="16dp"
+        android:elevation="5dp"
+        android:outlineProvider="bounds"
+        app:mt_placeholder="Mau Makan Dimana?"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
